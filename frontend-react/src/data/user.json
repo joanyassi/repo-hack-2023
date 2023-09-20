@@ -1,0 +1,22 @@
+{
+    "client01": {
+        "username": "CLIENT01",
+        "password": "123"
+    },
+    "client02": {
+        "username": "CLIENT02",
+        "password": "123"
+    },
+    "client03": {
+        "username": "CLIENT03",
+        "password": "123"
+    },
+    "DEALER01": {
+        "username": "DEALER01",
+        "password": "123"
+    },
+    "DEALER02": {
+        "username": "DEALER02",
+        "password": "123"
+    }
+}
