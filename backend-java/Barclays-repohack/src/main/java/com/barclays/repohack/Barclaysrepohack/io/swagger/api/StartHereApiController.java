@@ -60,7 +60,7 @@ public class StartHereApiController implements StartHereApi {
             HttpHeaders headers = new HttpHeaders();
             headers.set("x-participant-id", xParticipantId);
             headers.set("x-api-key", xApiKey);
-            return startHereApiService.getPingResponse(headers);
+            return startHereApiService.getAuthPingResponse(headers);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

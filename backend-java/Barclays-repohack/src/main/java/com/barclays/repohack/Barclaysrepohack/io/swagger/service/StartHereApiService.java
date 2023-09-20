@@ -19,9 +19,9 @@ public class StartHereApiService {
         this.restTemplate = restTemplate;
     }
 
-    public ResponseEntity<PingResponse> getPingResponse(HttpHeaders headers){
+    public ResponseEntity<PingResponse> getAuthPingResponse(HttpHeaders headers){
         return restTemplate.exchange(
-                "https://repohack2023.nayaone.com/start-here/public-ping", HttpMethod.GET, new HttpEntity<>(headers),
+                "https://repohack2023.nayaone.com/start-here/auth-ping", HttpMethod.GET, new HttpEntity<>(headers),
                 PingResponse.class);
     }
 
