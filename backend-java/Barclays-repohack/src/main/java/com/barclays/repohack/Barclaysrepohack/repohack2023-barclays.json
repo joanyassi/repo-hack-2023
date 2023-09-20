@@ -1,0 +1,2116 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Barclays RepoHack 2023 API",
+    "description": "APIs for the dealers’ and clients’ interactions with financial market infrastructure services (Trade matching middleware, CCPs, CSDs) for the Barclays 2023 Repo Hackathon.<br>Please ensure you include your API key in the `x-api-key` header of your requests.",
+    "version": "0.12"
+  },
+  "servers": [
+    {
+      "url": "https://repohack2023.nayaone.com/",
+      "description": "PROD"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Start Here!",
+      "description": "Use these ping endpoints to test connectivity to hackathon APIs. <br>The `/public-ping` API does not need you to provide an API key and is useful to test your connectivity to the hackathon server.<br>The `/auth-ping` API requires your team's API key and is useful to test authentication.<br>If you are able to hit both APIs and successfully receive response back then you are ready to rock and roll and interact with the rest of the APIs during the hackathon."
+    },
+    {
+      "name": "Trade Execution API",
+      "description": "This API enables simulation of dealers’ and clients’ interaction with the Trading Matching Middleware services.<br>"
+    },
+    {
+      "name": "Trade Clearing API",
+      "description": "This API enables simulation of dealers’ and clients’ interaction with the central counterparty (CCP) trade clearing service.<br>"
+    },
+    {
+      "name": "Trade Settlement API",
+      "description": "This API enables simulation of dealers’ and clients’ interactions with the central securities depository (CSD) services.<br>"
+    },
+    {
+      "name": "Trade Query API",
+      "description": "These APIs provide dealers and clients the query gateway to retrieve the trades workflow statuses and trade business events from the FMIs. <br>The `/repoTrades/tradeWorkflowStatus/` API provides workflow status of trades processed at the FMIs.<br>The `/repoTrades/tradeBusinessEventsQuery/` API provides trade business events processed at the FMIs.<br>"
+    }
+  ],
+  "paths": {
+    "/repoTrades/tradeBusinessEventsQuery/": {
+      "post": {
+        "tags": [
+          "Trade Query API"
+        ],
+        "summary": "Get trade business events.",
+        "description": "Get the trade business events processed at the FMIs.",
+        "operationId": "get-businessEvents",
+        "parameters": [
+          {
+            "name": "x-api-request-id",
+            "in": "header",
+            "description": "Unique request identifier for the request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd"
+          },
+          {
+            "name": "x-participant-id",
+            "in": "header",
+            "description": "Unique team identifier provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX"
+          },
+          {
+            "name": "x-financial-member-id",
+            "in": "header",
+            "description": "Name of the party retrieving the trade(s) data. Possible values CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02 OR CCP01 for cleared trades.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "DEALER01"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API authorization key provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX_ABCDCEFGHIJabcdefghij12345668438383_0XX"
+          },
+          {
+            "name": "x-simulation-date",
+            "in": "header",
+            "description": "Date on which the trade(s) was processed at the FMIs. The value should be specified in ISO date format(yyyy-MM-dd).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-09-21"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TradeBusinessEventsQueryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved trade business events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeBusinessEventsQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad/Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied to API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessDeniedResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/repoTrades/settlement": {
+      "post": {
+        "tags": [
+          "Trade Settlement API"
+        ],
+        "summary": "Submit trade settlement request.",
+        "description": "Submit the trade request to the CSD's settlement service. <br><br> Input to this API is a contract formation business event in CDM format. For UC1, it is the business event returned by the trade matching middleware service. For UC2 it is the business events returned by the clearing service. <br><br> You can use the Rosetta Technology Portal to understand the specification of a business event.",
+        "operationId": "post-settlement-request",
+        "parameters": [
+          {
+            "name": "x-api-request-id",
+            "in": "header",
+            "description": "Unique request identifier for the request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd"
+          },
+          {
+            "name": "x-participant-id",
+            "in": "header",
+            "description": "Unique team identifier provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX"
+          },
+          {
+            "name": "x-financial-member-id",
+            "in": "header",
+            "description": "Name of the party submitting the trade (should match with the value specified in the input business event). Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02 OR CCP01 for cleared trades.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "DEALER01"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API authorization key provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX_ABCDCEFGHIJabcdefghij12345668438383_0XX"
+          },
+          {
+            "name": "x-simulation-date",
+            "in": "header",
+            "description": "Date on which the trade will be submitted for processing to the FMI.  Note that this parameter enables you to fast forward through the trade lifecycle for the purpose of the hackathon. The value must be specified in ISO date format(yyyy-MM-dd).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-09-21"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoTradeSubmissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad/Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied to API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessDeniedResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/repoTrades/execution": {
+      "post": {
+        "tags": [
+          "Trade Execution API"
+        ],
+        "summary": "Submit trade execution request.",
+        "description": "Submit the trade request to the matching service of the trade matching middleware. ",
+        "operationId": "post-execution-request",
+        "parameters": [
+          {
+            "name": "x-api-request-id",
+            "in": "header",
+            "description": "Unique request identifier for the request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd"
+          },
+          {
+            "name": "x-participant-id",
+            "in": "header",
+            "description": "Unique team identifier provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX"
+          },
+          {
+            "name": "x-financial-member-id",
+            "in": "header",
+            "description": "Name of the party submitting the trade (should match with the value specified in the input trade data). Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "CLIENT02"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API authorization key provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX_ABCDCEFGHIJabcdefghij12345668438383_0XX"
+          },
+          {
+            "name": "x-simulation-date",
+            "in": "header",
+            "description": "Date on which the trade will be submitted for processing to the FMI. Note that this parameter enables you to fast forward through the trade lifecycle for the purpose of the hackathon. The value must be specified in ISO date format(yyyy-MM-dd).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-09-21"
+          }
+        ],
+        "requestBody": {
+          "description": "Repo Trade Execution Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepoTradeExecutionSubmissionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoTradeSubmissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad/Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied to API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessDeniedResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/repoTrades/clearing": {
+      "post": {
+        "tags": [
+          "Trade Clearing API"
+        ],
+        "summary": "Submit trade clearing request.",
+        "description": "Submit the trade request to CCP's clearing service. <br><br> Input to this API is a contract formation business event (in CDM format) received from the trade matching service. <br><br> You can use the Rosetta Technology Portal to understand the specification of a business event",
+        "operationId": "post-settlement-request_1",
+        "parameters": [
+          {
+            "name": "x-api-request-id",
+            "in": "header",
+            "description": "Unique request identifier for the request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd"
+          },
+          {
+            "name": "x-participant-id",
+            "in": "header",
+            "description": "Unique team identifier provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX"
+          },
+          {
+            "name": "x-financial-member-id",
+            "in": "header",
+            "description": "Name of the party submitting the trade (should match with the value specified in the input business event data). Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "CLIENT02"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API authorization key provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX_ABCDCEFGHIJabcdefghij12345668438383_0XX"
+          },
+          {
+            "name": "x-simulation-date",
+            "in": "header",
+            "description": "Date on which the trade will be submitted for processing to the FMI. Note that this parameter enables you to fast forward through the trade lifecycle for the purpose of the hackathon. The value must be specified in ISO date format(yyyy-MM-dd).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "2023-09-21"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClearingRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoTradeSubmissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad/Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied to API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessDeniedResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/start-here/public-ping": {
+      "get": {
+        "tags": [
+          "Start Here!"
+        ],
+        "operationId": "getPublicPing",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/start-here/auth-ping": {
+      "get": {
+        "tags": [
+          "Start Here!"
+        ],
+        "operationId": "getAuthPing",
+        "parameters": [
+          {
+            "name": "x-participant-id",
+            "in": "header",
+            "description": "Unique team id assigned to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API authorization key provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX_ABCDCEFGHIJabcdefghij12345668438383_0XX"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/repoTrades/tradeWorkflowStatus/": {
+      "get": {
+        "tags": [
+          "Trade Query API"
+        ],
+        "summary": "Get trade workflow statuses.",
+        "description": "Get workflow statuses of the trades processed at the FMIs.",
+        "operationId": "get-workflowEvents",
+        "parameters": [
+          {
+            "name": "x-api-request-id",
+            "in": "header",
+            "description": "Unique request identifier for the request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd"
+          },
+          {
+            "name": "x-participant-id",
+            "in": "header",
+            "description": "Unique team identifier provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX"
+          },
+          {
+            "name": "x-financial-member-id",
+            "in": "header",
+            "description": "Name of the party retrieving the workflow statuses for its trade(s) processed at the FMIs. Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02 OR CCP01 for cleared trades.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "CLIENT02"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API authorization key provided to your team.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TEAM0XX_ABCDCEFGHIJabcdefghij12345668438383_0XX"
+          },
+          {
+            "name": "tradeId",
+            "in": "query",
+            "description": "Unique identifier for the trade.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "UC2Q0EKXFH6260"
+          },
+          {
+            "name": "fmi",
+            "in": "query",
+            "description": "Name of the financial market infrastructure for which you will like to pull the trades details. Possible values are: TRADE_MATCHING_SERVICE, TRADE_CLEARING_SERVICE, TRADE_SETTLEMENT_SERVICE",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "TRADE_MATCHING_SERVICE"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved trade workflow statuses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeWorkflowStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad/Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied to API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessDeniedResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccessDeniedResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "title": "Timestamp of the error.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-09-08T09:20:05.0599323Z"
+          },
+          "status": {
+            "title": "HTTPS Status code.",
+            "type": "integer",
+            "format": "int32",
+            "example": 403
+          },
+          "error": {
+            "title": "Description of the HTTP Status code.",
+            "type": "string",
+            "example": "Forbidden"
+          },
+          "message": {
+            "title": "Error message.",
+            "type": "string",
+            "example": "Access Denied"
+          },
+          "path": {
+            "title": "URI details.",
+            "type": "string",
+            "example": "/start-here/auth-ping"
+          }
+        }
+      },
+      "BadRequestResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "title": "HTTPS Status code.",
+            "type": "integer",
+            "format": "int32",
+            "example": 400
+          },
+          "name": {
+            "title": "Description of the HTTP Status code.",
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "message": {
+            "title": "Error message.",
+            "type": "string",
+            "example": "Invalid x-financial-member-id passed"
+          }
+        }
+      },
+      "BusinessEventData": {
+        "type": "object",
+        "properties": {
+          "tradeId": {
+            "title": "Unique Identifier for the Trade.",
+            "type": "string",
+            "example": "UC2Q0EKXFH6260"
+          },
+          "businessEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessEventDto"
+            }
+          }
+        }
+      },
+      "BusinessEventDto": {
+        "type": "object",
+        "properties": {
+          "businessEventName": {
+            "title": "Name of the Business Events.",
+            "type": "string",
+            "example": "TradeContractFormedEvent"
+          },
+          "businessEventSeq": {
+            "title": "Sequence of the Business Event processed for the trade at FMI.",
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          },
+          "businessEventData": {
+            "$ref": "#/components/schemas/JsonNode"
+          },
+          "eventCreatedDate": {
+            "title": "Business Event Creation Timestamp.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-25T10:26:24.441Z"
+          }
+        }
+      },
+      "ClearingRequestBody": {
+        "type": "object",
+        "properties": {
+          "businessEventData": {
+            "$ref": "#/components/schemas/JsonNode"
+          }
+        }
+      },
+      "ErrorResponseBody": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "title": "Timestamp of the error.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-09-08T09:20:05.0599323Z"
+          },
+          "status": {
+            "title": "HTTPS Status code.",
+            "type": "integer",
+            "format": "int32",
+            "example": 500
+          },
+          "error": {
+            "title": "Description of the HTTP Status code.",
+            "type": "string",
+            "example": "Internal Server Error"
+          },
+          "message": {
+            "title": "Error message.",
+            "type": "string",
+            "example": "Error occurred while processing your request. Please contact the Barclays hackathon platform team."
+          },
+          "path": {
+            "title": "URI details.",
+            "type": "string",
+            "example": "uri=/repoTrades/execution"
+          }
+        }
+      },
+      "JsonNode": {
+        "title": "CDM business event",
+        "type": "object",
+        "example": {
+          "effectiveDate": "2023-09-21",
+          "eventDate": "2023-09-21",
+          "instruction": [
+            {
+              "before": {
+                "value": {
+                  "state": {
+                    "positionState": "EXECUTED"
+                  },
+                  "trade": {
+                    "party": [
+                      {
+                        "account": {
+                          "accountName": {
+                            "value": "DEALER02-ACCOUNT01"
+                          }
+                        },
+                        "meta": {
+                          "globalKey": "374231c5"
+                        },
+                        "name": {
+                          "value": "DEALER02"
+                        },
+                        "partyId": [
+                          {
+                            "identifier": {
+                              "value": "DEALER02-ACCOUNT01"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "account": {
+                          "accountName": {
+                            "value": "CLIENT02-ACCOUNT02"
+                          }
+                        },
+                        "meta": {
+                          "globalKey": "c9569656"
+                        },
+                        "name": {
+                          "value": "CLIENT02"
+                        },
+                        "partyId": [
+                          {
+                            "identifier": {
+                              "value": "CLIENT02-LEI02"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "partyRole": [
+                      {
+                        "partyReference": {
+                          "value": {
+                            "account": {
+                              "accountName": {
+                                "value": "DEALER02-ACCOUNT01"
+                              }
+                            },
+                            "meta": {
+                              "globalKey": "374231c5"
+                            },
+                            "name": {
+                              "value": "DEALER02"
+                            },
+                            "partyId": [
+                              {
+                                "identifier": {
+                                  "value": "DEALER02-ACCOUNT01"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "role": "BUYER"
+                      },
+                      {
+                        "partyReference": {
+                          "value": {
+                            "account": {
+                              "accountName": {
+                                "value": "CLIENT02-ACCOUNT02"
+                              }
+                            },
+                            "meta": {
+                              "globalKey": "c9569656"
+                            },
+                            "name": {
+                              "value": "CLIENT02"
+                            },
+                            "partyId": [
+                              {
+                                "identifier": {
+                                  "value": "CLIENT02-LEI02"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "role": "SELLER"
+                      }
+                    ],
+                    "tradableProduct": {
+                      "counterparty": [
+                        {
+                          "partyReference": {
+                            "value": {
+                              "account": {
+                                "accountName": {
+                                  "value": "DEALER02-ACCOUNT01"
+                                }
+                              },
+                              "meta": {
+                                "globalKey": "374231c5"
+                              },
+                              "name": {
+                                "value": "DEALER02"
+                              },
+                              "partyId": [
+                                {
+                                  "identifier": {
+                                    "value": "DEALER02-ACCOUNT01"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "role": "PARTY_1"
+                        },
+                        {
+                          "partyReference": {
+                            "value": {
+                              "account": {
+                                "accountName": {
+                                  "value": "CLIENT02-ACCOUNT02"
+                                }
+                              },
+                              "meta": {
+                                "globalKey": "c9569656"
+                              },
+                              "name": {
+                                "value": "CLIENT02"
+                              },
+                              "partyId": [
+                                {
+                                  "identifier": {
+                                    "value": "CLIENT02-LEI02"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "role": "PARTY_2"
+                        }
+                      ],
+                      "product": {
+                        "contractualProduct": {
+                          "productTaxonomy": [
+                            {
+                              "source": "OTHER",
+                              "productQualifier": "RepurchaseAgreement"
+                            }
+                          ],
+                          "economicTerms": {
+                            "collateral": {
+                              "collateralPortfolio": [
+                                {
+                                  "value": {
+                                    "collateralPosition": [
+                                      {
+                                        "product": {
+                                          "contractualProduct": {
+                                            "economicTerms": {
+                                              "payout": {
+                                                "assetPayout": [
+                                                  {
+                                                    "payerReceiver": {
+                                                      "payer": "PARTY_2",
+                                                      "receiver": "PARTY_1"
+                                                    },
+                                                    "priceQuantity": {
+                                                      "quantitySchedule": {
+                                                        "value": {
+                                                          "unit": {
+                                                            "financialUnit": "CONTRACTUAL_PRODUCT"
+                                                          },
+                                                          "value": 6000000.0
+                                                        }
+                                                      }
+                                                    },
+                                                    "assetLeg": [
+                                                      {
+                                                        "deliveryMethod": "DELIVERY_VERSUS_PAYMENT",
+                                                        "settlementDate": {
+                                                          "adjustableDate": {
+                                                            "unadjustedDate": "2023-09-21"
+                                                          }
+                                                        }
+                                                      }
+                                                    ],
+                                                    "durationType": {
+                                                      "durationType": "TERM"
+                                                    },
+                                                    "securityInformation": {
+                                                      "security": {
+                                                        "productIdentifier": [
+                                                          {
+                                                            "value": {
+                                                              "identifier": {
+                                                                "value": "GBYGEZTLXN1"
+                                                              },
+                                                              "source": "ISIN"
+                                                            }
+                                                          }
+                                                        ]
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "payerReceiver": {
+                                                      "payer": "PARTY_1",
+                                                      "receiver": "PARTY_2"
+                                                    },
+                                                    "priceQuantity": {
+                                                      "quantitySchedule": {
+                                                        "value": {
+                                                          "unit": {
+                                                            "financialUnit": "CONTRACTUAL_PRODUCT"
+                                                          },
+                                                          "value": 6000000.0
+                                                        }
+                                                      }
+                                                    },
+                                                    "assetLeg": [
+                                                      {
+                                                        "deliveryMethod": "DELIVERY_VERSUS_PAYMENT",
+                                                        "settlementDate": {
+                                                          "adjustableDate": {
+                                                            "unadjustedDate": "2023-09-26"
+                                                          }
+                                                        }
+                                                      }
+                                                    ],
+                                                    "durationType": {
+                                                      "durationType": "TERM"
+                                                    },
+                                                    "securityInformation": {
+                                                      "security": {
+                                                        "productIdentifier": [
+                                                          {
+                                                            "value": {
+                                                              "identifier": {
+                                                                "value": "GBYGEZTLXN1"
+                                                              },
+                                                              "source": "ISIN"
+                                                            }
+                                                          }
+                                                        ]
+                                                      }
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ],
+                              "collateralProvisions": {
+                                "collateralType": "NON_CASH",
+                                "eligibleCollateral": [
+                                  {
+                                    "criteria": [
+                                      {
+                                        "treatment": {
+                                          "valuationTreatment": {
+                                            "haircutPercentage": 0.02,
+                                            "marginPercentage": 98.4
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "effectiveDate": {
+                              "adjustableDate": {
+                                "unadjustedDate": "2023-09-21"
+                              }
+                            },
+                            "payout": {
+                              "interestRatePayout": [
+                                {
+                                  "payerReceiver": {
+                                    "payer": "PARTY_1",
+                                    "receiver": "PARTY_2"
+                                  },
+                                  "principalPayment": {
+                                    "finalPayment": true,
+                                    "initialPayment": true,
+                                    "intermediatePayment": false,
+                                    "principalPaymentSchedule": {
+                                      "finalPrincipalPayment": {
+                                        "payerReceiver": {
+                                          "payer": "PARTY_2",
+                                          "receiver": "PARTY_1"
+                                        },
+                                        "principalAmount": {
+                                          "value": 5788297.78
+                                        },
+                                        "principalPaymentDate": {
+                                          "unadjustedDate": "2023-09-26"
+                                        }
+                                      },
+                                      "initialPrincipalPayment": {
+                                        "payerReceiver": {
+                                          "payer": "PARTY_1",
+                                          "receiver": "PARTY_2"
+                                        },
+                                        "principalAmount": {
+                                          "value": 5785920.0
+                                        },
+                                        "principalPaymentDate": {
+                                          "unadjustedDate": "2023-09-21"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "calculationPeriodDates": {
+                                    "effectiveDate": {
+                                      "adjustableDate": {
+                                        "unadjustedDate": "2023-09-21"
+                                      }
+                                    },
+                                    "terminationDate": {
+                                      "adjustableDate": {
+                                        "unadjustedDate": "2023-09-26"
+                                      }
+                                    }
+                                  },
+                                  "dayCountFraction": {
+                                    "value": "ACT/360"
+                                  },
+                                  "rateSpecification": {
+                                    "fixedRate": {
+                                      "rateSchedule": {
+                                        "price": {
+                                          "value": {
+                                            "unit": {
+                                              "currency": {
+                                                "value": "GBP"
+                                              }
+                                            },
+                                            "value": 0.05,
+                                            "perUnitOf": {
+                                              "currency": {
+                                                "value": "GBP"
+                                              }
+                                            },
+                                            "priceExpression": {
+                                              "priceType": "INTEREST_RATE"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "terminationDate": {
+                              "adjustableDate": {
+                                "unadjustedDate": "2023-09-26"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "tradeLot": [
+                        {
+                          "priceQuantity": [
+                            {
+                              "meta": {
+                                "globalKey": "b3c54555"
+                              },
+                              "price": [
+                                {
+                                  "value": {
+                                    "unit": {
+                                      "currency": {
+                                        "value": "GBP"
+                                      }
+                                    },
+                                    "value": 0.05,
+                                    "perUnitOf": {
+                                      "currency": {
+                                        "value": "GBP"
+                                      }
+                                    },
+                                    "priceExpression": {
+                                      "priceType": "INTEREST_RATE"
+                                    }
+                                  }
+                                }
+                              ],
+                              "quantity": [
+                                {
+                                  "value": {
+                                    "unit": {
+                                      "currency": {
+                                        "value": "GBP"
+                                      }
+                                    },
+                                    "value": 5785920.0
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "meta": {
+                                "globalKey": "e23658fc"
+                              },
+                              "observable": {
+                                "productIdentifier": [
+                                  {
+                                    "value": {
+                                      "identifier": {
+                                        "value": "GBYGEZTLXN1"
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "price": [
+                                {
+                                  "value": {
+                                    "value": 6000000.0,
+                                    "perUnitOf": {
+                                      "financialUnit": "CONTRACTUAL_PRODUCT"
+                                    },
+                                    "priceExpression": {
+                                      "cleanOrDirty": "DIRTY",
+                                      "priceExpression": "PERCENTAGE_OF_NOTIONAL",
+                                      "priceType": "ASSET_PRICE"
+                                    }
+                                  }
+                                }
+                              ],
+                              "quantity": [
+                                {
+                                  "value": {
+                                    "unit": {
+                                      "financialUnit": "CONTRACTUAL_PRODUCT"
+                                    },
+                                    "value": 6000000.0
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "tradeDate": {
+                      "value": "2023-09-21"
+                    },
+                    "tradeIdentifier": [
+                      {
+                        "assignedIdentifier": [
+                          {
+                            "identifier": {
+                              "value": "UC1Q0EKXFH6260"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "intent": "CONTRACT_FORMATION",
+          "after": [
+            {
+              "state": {
+                "positionState": "FORMED"
+              },
+              "trade": {
+                "party": [
+                  {
+                    "account": {
+                      "accountName": {
+                        "value": "DEALER02-ACCOUNT01"
+                      }
+                    },
+                    "meta": {
+                      "globalKey": "374231c5"
+                    },
+                    "name": {
+                      "value": "DEALER02"
+                    },
+                    "partyId": [
+                      {
+                        "identifier": {
+                          "value": "DEALER02-ACCOUNT01"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "account": {
+                      "accountName": {
+                        "value": "CLIENT02-ACCOUNT02"
+                      }
+                    },
+                    "meta": {
+                      "globalKey": "c9569656"
+                    },
+                    "name": {
+                      "value": "CLIENT02"
+                    },
+                    "partyId": [
+                      {
+                        "identifier": {
+                          "value": "CLIENT02-LEI02"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "partyRole": [
+                  {
+                    "partyReference": {
+                      "value": {
+                        "account": {
+                          "accountName": {
+                            "value": "DEALER02-ACCOUNT01"
+                          }
+                        },
+                        "meta": {
+                          "globalKey": "374231c5"
+                        },
+                        "name": {
+                          "value": "DEALER02"
+                        },
+                        "partyId": [
+                          {
+                            "identifier": {
+                              "value": "DEALER02-ACCOUNT01"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "role": "BUYER"
+                  },
+                  {
+                    "partyReference": {
+                      "value": {
+                        "account": {
+                          "accountName": {
+                            "value": "CLIENT02-ACCOUNT02"
+                          }
+                        },
+                        "meta": {
+                          "globalKey": "c9569656"
+                        },
+                        "name": {
+                          "value": "CLIENT02"
+                        },
+                        "partyId": [
+                          {
+                            "identifier": {
+                              "value": "CLIENT02-LEI02"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "role": "SELLER"
+                  }
+                ],
+                "tradableProduct": {
+                  "counterparty": [
+                    {
+                      "partyReference": {
+                        "value": {
+                          "account": {
+                            "accountName": {
+                              "value": "DEALER02-ACCOUNT01"
+                            }
+                          },
+                          "meta": {
+                            "globalKey": "374231c5"
+                          },
+                          "name": {
+                            "value": "DEALER02"
+                          },
+                          "partyId": [
+                            {
+                              "identifier": {
+                                "value": "DEALER02-ACCOUNT01"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "role": "PARTY_1"
+                    },
+                    {
+                      "partyReference": {
+                        "value": {
+                          "account": {
+                            "accountName": {
+                              "value": "CLIENT02-ACCOUNT02"
+                            }
+                          },
+                          "meta": {
+                            "globalKey": "c9569656"
+                          },
+                          "name": {
+                            "value": "CLIENT02"
+                          },
+                          "partyId": [
+                            {
+                              "identifier": {
+                                "value": "CLIENT02-LEI02"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "role": "PARTY_2"
+                    }
+                  ],
+                  "product": {
+                    "contractualProduct": {
+                      "productTaxonomy": [
+                        {
+                          "source": "OTHER",
+                          "productQualifier": "RepurchaseAgreement"
+                        }
+                      ],
+                      "economicTerms": {
+                        "collateral": {
+                          "collateralPortfolio": [
+                            {
+                              "value": {
+                                "collateralPosition": [
+                                  {
+                                    "product": {
+                                      "contractualProduct": {
+                                        "economicTerms": {
+                                          "payout": {
+                                            "assetPayout": [
+                                              {
+                                                "payerReceiver": {
+                                                  "payer": "PARTY_2",
+                                                  "receiver": "PARTY_1"
+                                                },
+                                                "priceQuantity": {
+                                                  "quantitySchedule": {
+                                                    "value": {
+                                                      "unit": {
+                                                        "financialUnit": "CONTRACTUAL_PRODUCT"
+                                                      },
+                                                      "value": 6000000.0
+                                                    }
+                                                  }
+                                                },
+                                                "assetLeg": [
+                                                  {
+                                                    "deliveryMethod": "DELIVERY_VERSUS_PAYMENT",
+                                                    "settlementDate": {
+                                                      "adjustableDate": {
+                                                        "unadjustedDate": "2023-09-21"
+                                                      }
+                                                    }
+                                                  }
+                                                ],
+                                                "durationType": {
+                                                  "durationType": "TERM"
+                                                },
+                                                "securityInformation": {
+                                                  "security": {
+                                                    "productIdentifier": [
+                                                      {
+                                                        "value": {
+                                                          "identifier": {
+                                                            "value": "GBYGEZTLXN1"
+                                                          },
+                                                          "source": "ISIN"
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "payerReceiver": {
+                                                  "payer": "PARTY_1",
+                                                  "receiver": "PARTY_2"
+                                                },
+                                                "priceQuantity": {
+                                                  "quantitySchedule": {
+                                                    "value": {
+                                                      "unit": {
+                                                        "financialUnit": "CONTRACTUAL_PRODUCT"
+                                                      },
+                                                      "value": 6000000.0
+                                                    }
+                                                  }
+                                                },
+                                                "assetLeg": [
+                                                  {
+                                                    "deliveryMethod": "DELIVERY_VERSUS_PAYMENT",
+                                                    "settlementDate": {
+                                                      "adjustableDate": {
+                                                        "unadjustedDate": "2023-09-26"
+                                                      }
+                                                    }
+                                                  }
+                                                ],
+                                                "durationType": {
+                                                  "durationType": "TERM"
+                                                },
+                                                "securityInformation": {
+                                                  "security": {
+                                                    "productIdentifier": [
+                                                      {
+                                                        "value": {
+                                                          "identifier": {
+                                                            "value": "GBYGEZTLXN1"
+                                                          },
+                                                          "source": "ISIN"
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "collateralProvisions": {
+                            "collateralType": "NON_CASH",
+                            "eligibleCollateral": [
+                              {
+                                "criteria": [
+                                  {
+                                    "treatment": {
+                                      "valuationTreatment": {
+                                        "haircutPercentage": 0.02,
+                                        "marginPercentage": 98.4
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "effectiveDate": {
+                          "adjustableDate": {
+                            "unadjustedDate": "2023-09-21"
+                          }
+                        },
+                        "payout": {
+                          "interestRatePayout": [
+                            {
+                              "payerReceiver": {
+                                "payer": "PARTY_1",
+                                "receiver": "PARTY_2"
+                              },
+                              "principalPayment": {
+                                "finalPayment": true,
+                                "initialPayment": true,
+                                "intermediatePayment": false,
+                                "principalPaymentSchedule": {
+                                  "finalPrincipalPayment": {
+                                    "payerReceiver": {
+                                      "payer": "PARTY_2",
+                                      "receiver": "PARTY_1"
+                                    },
+                                    "principalAmount": {
+                                      "value": 5788297.78
+                                    },
+                                    "principalPaymentDate": {
+                                      "unadjustedDate": "2023-09-26"
+                                    }
+                                  },
+                                  "initialPrincipalPayment": {
+                                    "payerReceiver": {
+                                      "payer": "PARTY_1",
+                                      "receiver": "PARTY_2"
+                                    },
+                                    "principalAmount": {
+                                      "value": 5785920.0
+                                    },
+                                    "principalPaymentDate": {
+                                      "unadjustedDate": "2023-09-21"
+                                    }
+                                  }
+                                }
+                              },
+                              "calculationPeriodDates": {
+                                "effectiveDate": {
+                                  "adjustableDate": {
+                                    "unadjustedDate": "2023-09-21"
+                                  }
+                                },
+                                "terminationDate": {
+                                  "adjustableDate": {
+                                    "unadjustedDate": "2023-09-26"
+                                  }
+                                }
+                              },
+                              "dayCountFraction": {
+                                "value": "ACT/360"
+                              },
+                              "rateSpecification": {
+                                "fixedRate": {
+                                  "rateSchedule": {
+                                    "price": {
+                                      "value": {
+                                        "unit": {
+                                          "currency": {
+                                            "value": "GBP"
+                                          }
+                                        },
+                                        "value": 0.05,
+                                        "perUnitOf": {
+                                          "currency": {
+                                            "value": "GBP"
+                                          }
+                                        },
+                                        "priceExpression": {
+                                          "priceType": "INTEREST_RATE"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "terminationDate": {
+                          "adjustableDate": {
+                            "unadjustedDate": "2023-09-26"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "tradeLot": [
+                    {
+                      "priceQuantity": [
+                        {
+                          "meta": {
+                            "globalKey": "b3c54555"
+                          },
+                          "price": [
+                            {
+                              "value": {
+                                "unit": {
+                                  "currency": {
+                                    "value": "GBP"
+                                  }
+                                },
+                                "value": 0.05,
+                                "perUnitOf": {
+                                  "currency": {
+                                    "value": "GBP"
+                                  }
+                                },
+                                "priceExpression": {
+                                  "priceType": "INTEREST_RATE"
+                                }
+                              }
+                            }
+                          ],
+                          "quantity": [
+                            {
+                              "value": {
+                                "unit": {
+                                  "currency": {
+                                    "value": "GBP"
+                                  }
+                                },
+                                "value": 5785920.0
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "meta": {
+                            "globalKey": "e23658fc"
+                          },
+                          "observable": {
+                            "productIdentifier": [
+                              {
+                                "value": {
+                                  "identifier": {
+                                    "value": "GBYGEZTLXN1"
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          "price": [
+                            {
+                              "value": {
+                                "value": 6000000.0,
+                                "perUnitOf": {
+                                  "financialUnit": "CONTRACTUAL_PRODUCT"
+                                },
+                                "priceExpression": {
+                                  "cleanOrDirty": "DIRTY",
+                                  "priceExpression": "PERCENTAGE_OF_NOTIONAL",
+                                  "priceType": "ASSET_PRICE"
+                                }
+                              }
+                            }
+                          ],
+                          "quantity": [
+                            {
+                              "value": {
+                                "unit": {
+                                  "financialUnit": "CONTRACTUAL_PRODUCT"
+                                },
+                                "value": 6000000.0
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "tradeDate": {
+                  "value": "2023-09-21"
+                },
+                "tradeIdentifier": [
+                  {
+                    "assignedIdentifier": [
+                      {
+                        "identifier": {
+                          "value": "UC1Q0EKXFH6260"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "eventQualifier": "ContractFormation",
+          "meta": {
+            "globalKey": "6a58abb"
+          }
+        }
+      },
+      "NotFoundResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "title": "HTTPS Status code.",
+            "type": "integer",
+            "format": "int32",
+            "example": 404
+          },
+          "name": {
+            "title": "Name of the HTTP Status code.",
+            "type": "string",
+            "example": "Not Found"
+          },
+          "message": {
+            "title": "Error message.",
+            "type": "string",
+            "example": "No workflow events found for given query criteria"
+          }
+        }
+      },
+      "PingResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "RepoBuyer": {
+        "title": "Repo buyer details",
+        "type": "object",
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string",
+            "example": "CLIENT02"
+          },
+          "buyer_lei": {
+            "title": "Buyer Legal Entity Identifier",
+            "type": "string",
+            "example": "CLIENT02-LEI01"
+          },
+          "buyer_account": {
+            "title": "Buyer Account Number",
+            "type": "string",
+            "example": "CLIENT02-ACCOUNT01"
+          }
+        }
+      },
+      "RepoSeller": {
+        "title": "Repo seller details",
+        "type": "object",
+        "properties": {
+          "seller_name": {
+            "title": "Seller Name",
+            "type": "string",
+            "example": "DEALER01"
+          },
+          "seller_lei": {
+            "title": "Seller Legal Entity Identifier",
+            "type": "string",
+            "example": "DEALER01-LEI01"
+          },
+          "seller_account": {
+            "title": "Seller Account Number",
+            "type": "string",
+            "example": "DEALER01-ACCOUNT01"
+          }
+        }
+      },
+      "RepoTradeDetails": {
+        "title": "Trade economic details",
+        "type": "object",
+        "properties": {
+          "trade_date": {
+            "title": "Trade execution date",
+            "type": "string",
+            "example": "2023-09-20"
+          },
+          "effective_date": {
+            "title": "Date on which the trade contractually takes effect",
+            "type": "string",
+            "example": "2023-09-20"
+          },
+          "maturity_date": {
+            "title": "Date on which the trade contractually terminates",
+            "type": "string",
+            "example": "2023-09-25"
+          },
+          "repo_rate": {
+            "title": "Rate of interest on cash amount",
+            "type": "number",
+            "example": 0.05
+          },
+          "rate_daycount_convention": {
+            "title": "Day count fraction",
+            "type": "string",
+            "example": "ACT_360"
+          },
+          "collateral_id": {
+            "title": "Unique identifier of the underlying Security",
+            "type": "string",
+            "example": "GBX3U42BMJ1"
+          },
+          "collateral_notional": {
+            "title": "Notional Amount",
+            "type": "number",
+            "example": 7000000
+          },
+          "collateral_dirty_price": {
+            "title": "Dirty price percentage",
+            "type": "number",
+            "example": 93.9
+          },
+          "collateral_haircut": {
+            "title": "Haircut percentage for the trade",
+            "type": "number",
+            "example": 0.02
+          },
+          "trade_ccy": {
+            "title": "Trade Currency",
+            "type": "string",
+            "example": "GBP"
+          },
+          "cash_amount": {
+            "title": "Cash amount loaned in the beginning of the trade",
+            "type": "number",
+            "example": 6441540.0
+          },
+          "termination_cash_amount": {
+            "title": "Cash amount settled at the end of the trade",
+            "type": "number",
+            "example": 6444187.21
+          }
+        }
+      },
+      "RepoTradeExecutionSubmissionRequest": {
+        "type": "object",
+        "properties": {
+          "trade_id": {
+            "title": "Unique Identifier for the Trade",
+            "type": "string",
+            "example": "UC2TFZSG4HB0D70"
+          },
+          "buyer": {
+            "$ref": "#/components/schemas/RepoBuyer"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/RepoSeller"
+          },
+          "tradeDetails": {
+            "$ref": "#/components/schemas/RepoTradeDetails"
+          }
+        }
+      },
+      "RepoTradeSubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "tradeId": {
+            "title": "Unique Identifier for the Trade.",
+            "type": "string",
+            "example": "UC2Q0EKXFH6260"
+          },
+          "tradeStatus": {
+            "title": "Status of the trade.",
+            "type": "string",
+            "example": "TRADE_ACCEPTED"
+          }
+        }
+      },
+      "SettlementRequestBody": {
+        "type": "object",
+        "properties": {
+          "businessEventData": {
+            "$ref": "#/components/schemas/JsonNode"
+          }
+        }
+      },
+      "TradeBusinessEventsQueryRequest": {
+        "type": "object",
+        "properties": {
+          "tradeId": {
+            "title": "Unique Identifier for the Trade.",
+            "type": "string",
+            "example": "UC2Q0EKXFH6260"
+          },
+          "fmi": {
+            "title": "Financial Market Infrastructure.Can be sent as empty or one of the value from(TRADE_MATCHING_SERVICE,TRADE_CLEARING_SERVICE,TRADE_SETTLEMENT_SERVICE).",
+            "type": "string",
+            "example": "TRADE_MATCHING_SERVICE"
+          },
+          "fromDate": {
+            "title": "From date in ISO Date Time Format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX). If only date is passed then system will consider SOD(\"yyyy-MM-dd'T'00:00:00.000+00:00\")",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-25T10:27:08.943Z"
+          },
+          "toDate": {
+            "title": "To date in ISO Date Time Format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX). If only date is passed then system will consider SOD(\"yyyy-MM-dd'T'00:00:00.000+00:00\")",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-25T10:27:08.943Z"
+          }
+        }
+      },
+      "TradeBusinessEventsQueryResponse": {
+        "type": "object",
+        "properties": {
+          "tradeMatchingService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessEventData"
+            }
+          },
+          "tradeClearingService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessEventData"
+            }
+          },
+          "tradeSettlementService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessEventData"
+            }
+          }
+        }
+      },
+      "TradeWorkflowStatusResponse": {
+        "type": "object",
+        "properties": {
+          "tradeMatchingService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEventData"
+            }
+          },
+          "tradeClearingService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEventData"
+            }
+          },
+          "tradeSettlementService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEventData"
+            }
+          }
+        }
+      },
+      "WorkflowEvent": {
+        "type": "object",
+        "properties": {
+          "eventSequence": {
+            "title": "Sequence of the Workflow Event processed for the trade at FMI.",
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          },
+          "requestId": {
+            "title": "Unique Request Identifier of the trade request.",
+            "type": "string",
+            "format": "uuid",
+            "example": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd"
+          },
+          "tradeStatus": {
+            "title": "Status of the trade.",
+            "type": "string",
+            "example": "TRADE_ACCEPTED"
+          },
+          "tradeMatchingStatus": {
+            "title": "Status of the trade matching.",
+            "type": "string",
+            "example": "TRADE_MATCH_SUCCESS"
+          },
+          "eventTimeStamp": {
+            "title": "Workflow Event Creation Timestamp.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-25T10:26:24.441Z"
+          }
+        }
+      },
+      "WorkflowEventData": {
+        "type": "object",
+        "properties": {
+          "tradeId": {
+            "title": "Unique Identifier for the Trade.",
+            "type": "string",
+            "example": "UC2Q0EKXFH6260"
+          },
+          "workflowEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEvent"
+            }
+          }
+        }
+      }
+    }
+  }
+}
