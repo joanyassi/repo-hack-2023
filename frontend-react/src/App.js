@@ -1,11 +1,15 @@
 import './App.css';
+import Home from './pages/Home'
+import { RouterProvider} from 'react-router-dom';
+import Router from './routes/routes'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-       Repo hack 2023
-      </header>
+    <RouterProvider router={Router} />
+      {/* <header className="App-header">
+       <Home />
+      </header> */}
     </div>
   );
 }
