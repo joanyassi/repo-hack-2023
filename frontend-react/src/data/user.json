@@ -1,22 +1,32 @@
 {
     "client01": {
         "username": "CLIENT01",
+        "buyer_lei": "CLIENT01-LEI01",
+        "buyer_account": "CLIENT01-ACCOUNT01",
         "password": "123"
     },
     "client02": {
         "username": "CLIENT02",
+        "buyer_lei": "CLIENT02-LEI01",
+        "buyer_account": "CLIENT02-ACCOUNT01",
         "password": "123"
     },
     "client03": {
         "username": "CLIENT03",
+        "buyer_lei": "CLIENT03-LEI01",
+        "buyer_account": "CLIENT03-ACCOUNT01",
         "password": "123"
     },
     "DEALER01": {
         "username": "DEALER01",
+        "seller_lei": "DEALER01-LEI01",
+        "seller_account": "DEALER01-ACCOUNT01",
         "password": "123"
     },
     "DEALER02": {
         "username": "DEALER02",
+        "seller_lei": "DEALER02-LEI01",
+        "seller_account": "DEALER02-ACCOUNT01",
         "password": "123"
     }
 }

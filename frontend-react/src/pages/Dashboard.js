@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import StartHere from '../components/start-here'
+import TradeExecution from '../components/execution/tradeExecution'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -74,7 +75,7 @@ export default function VerticalTabs() {
         <p>If API allows it then potential history of trades</p>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Trade Execution
+        <TradeExecution />
       </TabPanel>
       <TabPanel value={value} index={2}>
         Trade Clearing
