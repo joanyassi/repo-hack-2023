@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import StartHere from '../components/start-here'
 import TradeExecution from '../components/execution/tradeExecution'
+import Dashboard from '../components/dashboard/dashboard';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -72,8 +73,7 @@ export default function VerticalTabs() {
         <Tab label="Testing Connection" {...a11yProps(6)} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <p>List of trades involving the current user + actions available</p>
-        <p>If API allows it then potential history of trades</p>
+        <Dashboard />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <TradeExecution />

@@ -132,9 +132,9 @@ const TradeExecution = () => {
          style={{ width: '70%', margin: 'auto'}}
          >
          <h1>{`New ${userRole === 'seller' ? 'Sell' : 'Buy'} Trade`}</h1>
-         <div>
+         {/* <div>
 
-         </div>
+         </div> */}
          <Container
           sx={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 0'}}
          >
