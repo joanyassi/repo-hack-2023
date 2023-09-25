@@ -4,6 +4,7 @@ import {
 
 import Home from '../pages/Home'
 import Dashboard from '../pages/Dashboard'
+import HelloWord from '../pages/HelloWord'
 import Layout from "../components/header/header";
 
 const Router = createBrowserRouter([
@@ -17,6 +18,10 @@ const Router = createBrowserRouter([
 	{
 		path: "/dashboard/:id",
 		element: <Dashboard />,
+	},
+	{
+		path: "/hello-world",
+		element: <HelloWord />,
 	}
 		]
 	}

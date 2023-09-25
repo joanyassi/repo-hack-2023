@@ -41,8 +41,7 @@ const Header = () => {
             <Typography sx={{ minWidth: 30 }} margin={4}>Repo Hack 2023</Typography>
             </Box> :
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', textAlign: 'center' }}>
-          {/* <Typography sx={{ minWidth: 100 }}>Home</Typography> */}
-          <Typography sx={{ minWidth: 30 }}>{id.toUpperCase()}</Typography>
+          <Typography sx={{ minWidth: 30 }}>Welcome, <b>{id.toUpperCase()}</b>!</Typography>
           <Tooltip title="Account settings">
             <IconButton
               onClick={handleClick}
@@ -123,7 +122,7 @@ const Layout = () => {
 		<>
 			<Header />
 			<Outlet />
-			<div>footer</div>
+			{/* <div>footer</div> */}
 		</>
 	)
 }

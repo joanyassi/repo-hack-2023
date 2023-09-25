@@ -13,7 +13,6 @@ const LoginForm = () => {
     })
     const location = useLocation()
     const navigate = useNavigate()
-    // console.log({ location })
     const [err, setErr] = useState('')
 
     const { username, password }  = loginData
@@ -36,8 +35,6 @@ const LoginForm = () => {
         setErr('')
         navigate(`/dashboard/${username}`)
       }
-      console.log({ err })
-      console.log('form submitted', Object.values(Users), { result })
     }
 
   return (
@@ -49,7 +46,6 @@ const LoginForm = () => {
       }}
       noValidate
       autoComplete="off"
-      // border='2px solid red'
       minHeight='80vh'
       display='flex'
       justifyContent='center'
