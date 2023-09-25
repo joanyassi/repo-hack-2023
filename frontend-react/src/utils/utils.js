@@ -15,3 +15,23 @@ export const fetchData = async (headers, url) => {
       console.log({ error })
     }
 }
+
+export const getStatus = val => {
+    switch (val) {
+        case 'TRADE_MATCH_SUCCESS':
+            return 'SUCCESS'
+        case 'TRADE_MATCH_FAILURE':
+            return 'FAILED'
+        default:
+    }
+}
+
+export const getTradeStatus = val => {
+    switch (val) {
+        case 'TRADE_ACCEPTED':
+            return 'ACCEPTED'
+        case 'TRADE_REJECTED':
+            return 'REJECTED'
+        default:
+    }
+}
