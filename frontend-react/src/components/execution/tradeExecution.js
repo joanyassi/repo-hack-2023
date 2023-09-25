@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import { Box, Container } from "@mui/material"
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Button from '@mui/material/Button';
+import { v4 as uuidv4 } from 'uuid';
 import Users from '../../data/user.json'
+import { fetchData } from '../../utils/utils';
 
 const fieldStyle = {
   padding: '.5rem'
@@ -21,30 +23,24 @@ const divStyled = {
   flexDirection: 'column',
   alignItems: 'flex-start',
   width: '30%',
-  // border: '2px solid'
 }
 
 const TradeExecution = () => {
-  const [userDetails, setUserDetails] = useState({})
+  const [selectedUser, setSelectedUser] = useState({username: 'Select a participant', buyer_lei: '', buyer_account: ''})
   const [userRole, setUserRole] = useState('seller')
 
   const {id} = useParams()
-  useEffect(() => {
-    const result = Object.values(Users).filter(user => user.username.toLowerCase() === id.toLowerCase())[0]
-    setUserDetails(result)
-    console.log({ result })
-  }, [])
-
-  console.log({ userDetails })
+  const userDetails = Object.values(Users).filter(user => user.username.toLowerCase() === id.toLowerCase())[0]
+  const selectableUsers = [{username: 'Select a participant', buyer_lei: '', buyer_account: ''}, ...Object.values(Users).filter(user => user.username !== userDetails.username)]
 
   const getInitialValues = (userDetails) => {
     return {
-      buyer_name: userRole === 'buyer' ? userDetails.username : '',
-      buyer_lei: userRole === 'buyer' ? userDetails.buyer_lei : '',
-      buyer_account: userRole === 'buyer' ? userDetails.buyer_account : '',
-      seller_name: userRole === 'seller' ? userDetails.username : '',
-      seller_lei: userRole === 'seller' ? userDetails.buyer_lei : '',
-      seller_account: userRole === 'seller' ? userDetails.buyer_account : '',
+      buyer_name: userRole === 'buyer' ? userDetails.username : selectedUser.username,
+      buyer_lei: userRole === 'buyer' ? userDetails.buyer_lei : selectedUser.buyer_lei,
+      buyer_account: userRole === 'buyer' ? userDetails.buyer_account : selectedUser.buyer_account,
+      seller_name: userRole === 'seller' ? userDetails.username : selectedUser.username,
+      seller_lei: userRole === 'seller' ? userDetails.buyer_lei : selectedUser.buyer_lei,
+      seller_account: userRole === 'seller' ? userDetails.buyer_account : selectedUser.buyer_account,
       trade_date: '',
       effective_date: '',
       maturity_date: '',
@@ -58,6 +54,10 @@ const TradeExecution = () => {
       cash_amount: '',
       termination_cash_amount: ''
      }
+  }
+
+  const handleSelect = e => {
+    setSelectedUser(Object.values(Users).filter(user => user.username.toLowerCase() === e.target.value.toLowerCase())[0])
   }
 
   const handleSubmit = ({
@@ -106,7 +106,15 @@ const TradeExecution = () => {
         termination_cash_amount
       }
     }
-     console.log({ fomrValues })
+     const headers = {
+      "Accept": "application/json",
+      'x-api-key': process.env.REACT_APP_X_API_KEY,
+      'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
+      'x-api-request-id': uuidv4(),
+      'x-financial-member-id': id.toUpperCase(),
+      'x-simulation-date': trade_date
+    }
+     const response = fetchData( headers, '/repoTrades/execution')
        setSubmitting(false);
   }
     return (
@@ -115,21 +123,10 @@ const TradeExecution = () => {
         enableReinitialize="true"
        initialValues={getInitialValues(userDetails)}
        validate={values => {
-        
-        //  const errors = {};
-        //  if (!values.email) {
-        //    errors.email = 'Required';
-        //  } else if (
-        //    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-        //  ) {
-        //    errors.email = 'Invalid email address';
-        //  }
-        //  return errors;
        }}
        onSubmit={(values, setSubmitting) => handleSubmit(values, setSubmitting)}
      >
        {(props) => {
-        console.log({props})
         return (
          <Form
          style={{ width: '70%', margin: 'auto'}}
@@ -144,34 +141,36 @@ const TradeExecution = () => {
             <Box
               sx={{ width: '40%'}}
             >
-         <Button style={{margin: '1rem 0', background: 'red'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('seller'))} variant="contained">Sell</Button>
-
+              <Button style={{margin: '1rem 0', background: 'red'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('seller'))} variant="contained">Sell</Button>
               <h4>Seller Details</h4>
               <div
                 style={{...divStyled, width: '100%'}}
               >
                 <label htmlFor="seller_name" style={{...labelStyeled, paddingTop: '1rem'}}>Name</label>
-                <Field 
+                <Field
+                  as='select'
                   id="seller_name" 
                   name="seller_name"
-                  placeholder="DEALER01"
-                  style={{...fieldStyle, width: '90%'}}
-                  defaultValue='LexyKing'
-                  />
+                  style={{...fieldStyle, width: '96%'}}
+                  onChange={handleSelect}
+                  defaultValue=''
+                  >
+                    {userRole === 'seller' ? <option value={userDetails.username}>{userDetails.username}</option> : selectableUsers.map(user =><option value={user.username}>{user.username}</option>)}
+                  </Field>
                 <ErrorMessage name="seller_name" component="div" />
               </div>
               <div
                 style={{...divStyled, width: '100%'}}
               >
                 <label htmlFor="seller_lei" style={{...labelStyeled, paddingTop: '1rem'}}>Lei</label>
-                <Field id="seller_lei" name="seller_lei" placeholder="DEALER01-LEI01" style={{...fieldStyle, width: '90%'}}/>
+                <Field id="seller_lei" name="seller_lei"  style={{...fieldStyle, width: '90%'}}/>
                 <ErrorMessage name="seller_lei" component="div" />
               </div>
               <div
                 style={{...divStyled, width: '100%'}}
               >
                 <label htmlFor="seller_account" style={{...labelStyeled, paddingTop: '1rem'}}>Account</label>
-                <Field id="seller_account" name="seller_account" placeholder="DEALER01-ACCOUNT01" style={{...fieldStyle, width: '90%'}}/>
+                <Field id="seller_account" name="seller_account" style={{...fieldStyle, width: '90%'}}/>
                 <ErrorMessage name="seller_account" component="div" />
               </div>
             </Box>
@@ -186,21 +185,29 @@ const TradeExecution = () => {
                 style={{...divStyled, width: '100%'}}
               >
                 <label htmlFor="buyer_name" style={{...labelStyeled, paddingTop: '1rem'}}>Name</label>
-                <Field id="buyer_name" name="buyer_name" placeholder="DEALER01" style={{...fieldStyle, width: '90%'}}/>
+                <Field
+                  as='select'
+                  id="buyer_name"
+                  name="buyer_name"
+                  style={{...fieldStyle, width: '96%'}}
+                  onChange={handleSelect}
+                  >
+                    {userRole === 'buyer' ? <option value={userDetails.username}>{userDetails.username}</option> : selectableUsers.map(user =><option value={user.username}>{user.username}</option>)}
+                  </Field>
                 <ErrorMessage name="buyer_name" component="div" />
               </div>
               <div
                 style={{...divStyled, width: '100%'}}
               >
                 <label htmlFor="buyer_lei" style={{...labelStyeled, paddingTop: '1rem'}}>Lei</label>
-                <Field id="buyer_lei" name="buyer_lei" placeholder="DEALER01-LEI01" style={{...fieldStyle, width: '90%'}}/>
+                <Field id="buyer_lei" name="buyer_lei" style={{...fieldStyle, width: '90%'}}/>
                 <ErrorMessage name="buyer_lei" component="div" />
               </div>
               <div
                 style={{...divStyled, width: '100%'}}
               >
                 <label htmlFor="buyer_account" style={{...labelStyeled, paddingTop: '1rem'}}>Account</label>
-                <Field id="buyer_account" name="buyer_account" placeholder="DEALER01-ACCOUNT01" style={{...fieldStyle, width: '90%'}}/>
+                <Field id="buyer_account" name="buyer_account" style={{...fieldStyle, width: '90%'}}/>
                 <ErrorMessage name="buyer_account" component="div" />
               </div>
             </Box>
@@ -243,7 +250,7 @@ const TradeExecution = () => {
                 style={{...divStyled}}
               >
                 <label htmlFor="repo_rate" style={labelStyeled}>Repo Rate</label>
-                <Field id="repo_rate" name="repo_rate" placeholder="0.05" style={{...fieldStyle, width: '90%'}}/>
+                <Field id="repo_rate" name="repo_rate" placeholder="0.05" style={{...fieldStyle, width: '90%'}} type='number'/>
                 <ErrorMessage name="repo_rate" component="div" />
               </div>
               <div
@@ -264,7 +271,7 @@ const TradeExecution = () => {
                 style={divStyled}
               >
                 <label htmlFor="collateral_notional" style={labelStyeled}>Collateral Notional</label>
-                <Field id="collateral_notional" name="collateral_notional" placeholder="7000000" style={{...fieldStyle, width: '90%'}}/>
+                <Field id="collateral_notional" name="collateral_notional" placeholder="7000000" style={{...fieldStyle, width: '90%'}} type='number'/>
                 <ErrorMessage name="collateral_notional" component="div" />
               </div>
               <div
