@@ -5,6 +5,7 @@
  */
 package com.barclays.repohack.Barclaysrepohack.io.swagger.api;
 
+import com.barclays.repohack.Barclaysrepohack.io.swagger.entities.Trade;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.model.AccessDeniedResponse;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.model.BadRequestResponse;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.model.ClearingRequestBody;
@@ -130,6 +131,12 @@ public interface RepoTradesApi {
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
     ResponseEntity<RepoTradeSubmissionResponse> tradeClearingRequest(@Parameter(in = ParameterIn.HEADER, description = "Unique request identifier for the request." ,required=true,schema=@Schema()) @RequestHeader(value="x-api-request-id", required=true) UUID xApiRequestId, @Parameter(in = ParameterIn.HEADER, description = "Unique team identifier provided to your team." ,required=true,schema=@Schema()) @RequestHeader(value="x-participant-id", required=true) String xParticipantId, @Parameter(in = ParameterIn.HEADER, description = "Name of the party submitting the trade (should match with the value specified in the input business event data). Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02." ,required=true,schema=@Schema()) @RequestHeader(value="x-financial-member-id", required=true) String xFinancialMemberId, @Parameter(in = ParameterIn.HEADER, description = "API authorization key provided to your team." ,required=true,schema=@Schema()) @RequestHeader(value="x-api-key", required=true) String xApiKey, @Parameter(in = ParameterIn.HEADER, description = "Date on which the trade will be submitted for processing to the FMI. Note that this parameter enables you to fast forward through the trade lifecycle for the purpose of the hackathon. The value must be specified in ISO date format(yyyy-MM-dd)." ,required=true,schema=@Schema()) @RequestHeader(value="x-simulation-date", required=true) String xSimulationDate, @Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody ClearingRequestBody body);
+
+
+    @RequestMapping(value = "/repoTrades/tradesList/",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<List<Trade>> getAllTrades();
 
 }
 

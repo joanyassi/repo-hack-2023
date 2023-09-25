@@ -1,5 +1,6 @@
 package com.barclays.repohack.Barclaysrepohack.io.swagger.api;
 
+import com.barclays.repohack.Barclaysrepohack.io.swagger.entities.Trade;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.model.*;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.service.RepoTradesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -98,5 +100,11 @@ public class RepoTradesApiController implements RepoTradesApi {
         return repoTradesService.tradeClearing(requestEntity);
     }
 
+    public ResponseEntity<List<Trade>> getAllTrades(){
+        return ResponseEntity.ok()
+                .body(repoTradesService.getTradesList());
+
+
+    }
 
 }
