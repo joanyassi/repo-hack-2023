@@ -27,6 +27,11 @@ public class RepoTradeSubmissionResponse   {
     return this;
   }
 
+  public RepoTradeSubmissionResponse(String tradeId){
+    this.tradeId = tradeId;
+  }
+
+  public RepoTradeSubmissionResponse(){}
   /**
    * Get tradeId
    * @return tradeId

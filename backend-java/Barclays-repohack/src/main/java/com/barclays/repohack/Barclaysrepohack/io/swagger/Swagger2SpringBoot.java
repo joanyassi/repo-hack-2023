@@ -19,7 +19,8 @@ import org.springframework.format.FormatterRegistry;
 @SpringBootApplication
 @EnableOpenApi
 @ComponentScan(basePackages = { "io.swagger.*"})
-@ComponentScan({"com.barclays.repohack.Barclaysrepohack.io.swagger","com.barclays.repohack.Barclaysrepohack.io.swagger.api", "com.barclays.repohack.Barclaysrepohack.io.swagger.configuration","com.barclays.repohack.Barclaysrepohack.io.swagger.service"})
+@ComponentScan({"com.barclays.repohack.Barclaysrepohack.io.swagger","com.barclays.repohack.Barclaysrepohack.io.swagger.api", "com.barclays.repohack.Barclaysrepohack.io.swagger.configuration","com.barclays.repohack.Barclaysrepohack.io.swagger.service",
+"com.barclays.repohack.Barclaysrepohack.io.swagger.entities", "com.barclays.repohack.Barclaysrepohack.io.swagger.repo"})
 public class Swagger2SpringBoot implements CommandLineRunner {
 
     @Override

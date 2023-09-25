@@ -4,7 +4,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.threeten.bp.OffsetDateTime;
+import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -24,10 +24,10 @@ public class TradeBusinessEventsQueryRequest   {
   private String fmi = null;
 
   @JsonProperty("fromDate")
-  private OffsetDateTime fromDate = null;
+  private DateTime fromDate = null;
 
   @JsonProperty("toDate")
-  private OffsetDateTime toDate = null;
+  private DateTime toDate = null;
 
   public TradeBusinessEventsQueryRequest tradeId(String tradeId) {
     this.tradeId = tradeId;
@@ -67,7 +67,7 @@ public class TradeBusinessEventsQueryRequest   {
     this.fmi = fmi;
   }
 
-  public TradeBusinessEventsQueryRequest fromDate(OffsetDateTime fromDate) {
+  public TradeBusinessEventsQueryRequest fromDate(DateTime fromDate) {
     this.fromDate = fromDate;
     return this;
   }
@@ -79,15 +79,15 @@ public class TradeBusinessEventsQueryRequest   {
   @Schema(example = "2023-08-25T10:27:08.943Z", description = "")
   
     @Valid
-    public OffsetDateTime getFromDate() {
+    public DateTime getFromDate() {
     return fromDate;
   }
 
-  public void setFromDate(OffsetDateTime fromDate) {
+  public void setFromDate(DateTime fromDate) {
     this.fromDate = fromDate;
   }
 
-  public TradeBusinessEventsQueryRequest toDate(OffsetDateTime toDate) {
+  public TradeBusinessEventsQueryRequest toDate(DateTime toDate) {
     this.toDate = toDate;
     return this;
   }
@@ -99,11 +99,11 @@ public class TradeBusinessEventsQueryRequest   {
   @Schema(example = "2023-08-25T10:27:08.943Z", description = "")
   
     @Valid
-    public OffsetDateTime getToDate() {
+    public DateTime getToDate() {
     return toDate;
   }
 
-  public void setToDate(OffsetDateTime toDate) {
+  public void setToDate(DateTime toDate) {
     this.toDate = toDate;
   }
 

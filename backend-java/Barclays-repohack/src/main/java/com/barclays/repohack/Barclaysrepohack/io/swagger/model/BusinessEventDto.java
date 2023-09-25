@@ -1,11 +1,12 @@
 package com.barclays.repohack.Barclaysrepohack.io.swagger.model;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.model.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.threeten.bp.OffsetDateTime;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -28,7 +29,7 @@ public class BusinessEventDto   {
   private JsonNode businessEventData = null;
 
   @JsonProperty("eventCreatedDate")
-  private OffsetDateTime eventCreatedDate = null;
+  private Date eventCreatedDate = null;
 
   public BusinessEventDto businessEventName(String businessEventName) {
     this.businessEventName = businessEventName;
@@ -88,7 +89,7 @@ public class BusinessEventDto   {
     this.businessEventData = businessEventData;
   }
 
-  public BusinessEventDto eventCreatedDate(OffsetDateTime eventCreatedDate) {
+  public BusinessEventDto eventCreatedDate(Date eventCreatedDate) {
     this.eventCreatedDate = eventCreatedDate;
     return this;
   }
@@ -100,11 +101,11 @@ public class BusinessEventDto   {
   @Schema(example = "2023-08-25T10:26:24.441Z", description = "")
   
     @Valid
-    public OffsetDateTime getEventCreatedDate() {
+    public Date getEventCreatedDate() {
     return eventCreatedDate;
   }
 
-  public void setEventCreatedDate(OffsetDateTime eventCreatedDate) {
+  public void setEventCreatedDate(Date eventCreatedDate) {
     this.eventCreatedDate = eventCreatedDate;
   }
 
