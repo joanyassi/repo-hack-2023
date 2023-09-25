@@ -51,7 +51,7 @@ export default function VerticalTabs() {
 
   return (
     <Box
-      sx={{display: 'flex', height: "auto", border: '1px solid #0474ac' }}
+      sx={{display: 'flex', height: "auto", border: '1px solid #0474ac', background: '#0474ac13' }}
     >
       <Tabs
         orientation="vertical"
@@ -60,7 +60,8 @@ export default function VerticalTabs() {
         aria-label="Vertical tabs example"
         sx={{ borderRight: 1, borderColor: 'divider', minWidth: '200px', }}
         textColor="primary"
-        indicatorColor="secondary"
+        // indicatorColor="secondary"
+        style={{backgroundColor: '#0474ac28'}}
       >
         <Tab label="Dashboard" {...a11yProps(0)}/>
         <Tab label="Trade Execution" {...a11yProps(1)} />

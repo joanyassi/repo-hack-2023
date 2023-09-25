@@ -19,14 +19,14 @@
     },
     "DEALER01": {
         "username": "DEALER01",
-        "seller_lei": "DEALER01-LEI01",
-        "seller_account": "DEALER01-ACCOUNT01",
+        "buyer_lei": "DEALER01-LEI01",
+        "buyer_account": "DEALER01-ACCOUNT01",
         "password": "123"
     },
     "DEALER02": {
         "username": "DEALER02",
-        "seller_lei": "DEALER02-LEI01",
-        "seller_account": "DEALER02-ACCOUNT01",
+        "buyer_lei": "DEALER02-LEI01",
+        "buyer_account": "DEALER02-ACCOUNT01",
         "password": "123"
     }
 }
