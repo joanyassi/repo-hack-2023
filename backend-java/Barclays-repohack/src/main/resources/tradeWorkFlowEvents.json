@@ -1,0 +1,44 @@
+{
+  "tradeMatchingService": [
+    {
+      "tradeId": "UC2Q0EKXFH6260",
+      "workflowEvents": [
+        {
+          "eventSequence": 1,
+          "requestId": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
+          "tradeStatus": "TRADE_ACCEPTED",
+          "tradeMatchingStatus": "TRADE_MATCH_SUCCESS",
+          "eventTimeStamp": "2023-08-25T10:26:24.441Z"
+        }
+      ]
+    }
+  ],
+  "tradeClearingService": [
+    {
+      "tradeId": "UC2Q0EKXFH6260",
+      "workflowEvents": [
+        {
+          "eventSequence": 1,
+          "requestId": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
+          "tradeStatus": "TRADE_ACCEPTED",
+          "tradeMatchingStatus": "TRADE_MATCH_SUCCESS",
+          "eventTimeStamp": "2023-08-25T10:26:24.441Z"
+        }
+      ]
+    }
+  ],
+  "tradeSettlementService": [
+    {
+      "tradeId": "UC2Q0EKXFH6260",
+      "workflowEvents": [
+        {
+          "eventSequence": 1,
+          "requestId": "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
+          "tradeStatus": "TRADE_ACCEPTED",
+          "tradeMatchingStatus": "TRADE_MATCH_SUCCESS",
+          "eventTimeStamp": "2023-08-25T10:26:24.441Z"
+        }
+      ]
+    }
+  ]
+}
