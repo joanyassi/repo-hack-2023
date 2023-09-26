@@ -6,14 +6,31 @@ const URLBase = 'http://localhost:8080/repohack'
 
 export const fetchData = async (headers, url) => {
     try {
-      const response = await axios.get(`${URLBase}${url}`, {
-         headers
-      })
+           const response = await axios.get(`${URLBase}${url}`, {
+               headers
+            })
       
       return response.data
     } catch (error) {
       console.log({ error })
     }
+}
+
+export const fetchNoHeaders = async (url) => {
+    const response = await axios.get(`${URLBase}${url}`)
+    return response.data
+}
+
+export const postData = async (headers, url, body) => {
+    try {
+        const response = await axios.post(`${URLBase}${url}`, body, {
+           headers
+        })
+        
+        return response
+      } catch (error) {
+        console.log({ error })
+      }
 }
 
 export const getStatus = val => {

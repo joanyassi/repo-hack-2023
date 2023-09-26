@@ -3,6 +3,7 @@ import {
 } from "react-router-dom";
 
 import Home from '../pages/Home'
+import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import HelloWord from '../pages/HelloWord'
 import Layout from "../components/header/header";
@@ -13,7 +14,7 @@ const Router = createBrowserRouter([
 		children: [
 				{
 		path: "/",
-		element: <Home />,
+		element: <Login />,
 	},
 	{
 		path: "/dashboard/:id",

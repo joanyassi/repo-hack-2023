@@ -9,7 +9,7 @@ import { Formik, Form, Field } from 'formik';
 import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment'
-import { fetchData, getStatus, getTradeStatus } from '../../utils/utils';
+import { fetchData, getStatus, getTradeStatus, fetchNoHeaders } from '../../utils/utils';
 
 const workflowEventLabelStyled = {
     fontStyle: 'Italic',
@@ -153,6 +153,13 @@ const date = new Date(workflowEvent.eventTimeStamp)
 export default function Dashboard() {
   const [value, setValue] = useState(0);
   const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
+  // const [listOfTrades, setListOfTrades] = useState([])
+
+
+  useEffect(() => {
+    const response = fetchNoHeaders('/repoTrades/tradesList/')
+    console.log({ response })
+  }, [])
 
   const getData = () => {
     const headers = {

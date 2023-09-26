@@ -36,10 +36,7 @@ const Header = () => {
     const isHomePage = window.location.pathname === '/'
 	return (
         <>
-        {isHomePage ? 
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-            <Typography sx={{ minWidth: 30 }} margin={4}>Repo Hack 2023</Typography>
-            </Box> :
+        {!isHomePage ?
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', textAlign: 'center' }}>
           <Typography sx={{ minWidth: 30 }}>Welcome, <b>{id.toUpperCase()}</b>!</Typography>
           <Tooltip title="Account settings">
@@ -54,7 +51,7 @@ const Header = () => {
               <Avatar sx={{ width: 32, height: 32 }}>{id.split('')[0].toUpperCase()}</Avatar>
             </IconButton>
           </Tooltip>
-        </Box>}
+        </Box> : null}
         <Menu
           anchorEl={anchorEl}
           id="account-menu"

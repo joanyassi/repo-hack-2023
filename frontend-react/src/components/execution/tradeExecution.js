@@ -1,11 +1,12 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import { Box, Container } from "@mui/material"
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
 import Users from '../../data/user.json'
-import { fetchData } from '../../utils/utils';
+import { postData } from '../../utils/utils';
+import { relativeTimeRounding } from 'moment';
 
 const fieldStyle = {
   padding: '.5rem'
@@ -28,7 +29,7 @@ const divStyled = {
 const TradeExecution = () => {
   const [selectedUser, setSelectedUser] = useState({username: 'Select a participant', buyer_lei: '', buyer_account: ''})
   const [userRole, setUserRole] = useState('seller')
-
+  const navigate = useNavigate()
   const {id} = useParams()
   const userDetails = Object.values(Users).filter(user => user.username.toLowerCase() === id.toLowerCase())[0]
   const selectableUsers = [{username: 'Select a participant', buyer_lei: '', buyer_account: ''}, ...Object.values(Users).filter(user => user.username !== userDetails.username)]
@@ -79,7 +80,7 @@ const TradeExecution = () => {
     trade_ccy,
     cash_amount,
     termination_cash_amount
-   }, { setSubmitting }) => {
+   }, { setSubmitting, resetForm }) => {
     const fomrValues = {
       buyer: {
         buyer_name,
@@ -114,9 +115,16 @@ const TradeExecution = () => {
       'x-financial-member-id': id.toUpperCase(),
       'x-simulation-date': trade_date
     }
-     const response = fetchData( headers, '/repoTrades/execution')
+     const response = postData( headers, '/repoTrades/execution', fomrValues)
+     console.log({ response })
+
        setSubmitting(false);
+      // resetForm(getInitialValues(userDetails))
+      window.location.reload();
+      console.log(`/dashboard/${id}`)
+      
   }
+
     return (
         <Box>
  <Formik
@@ -124,7 +132,7 @@ const TradeExecution = () => {
        initialValues={getInitialValues(userDetails)}
        validate={values => {
        }}
-       onSubmit={(values, setSubmitting) => handleSubmit(values, setSubmitting)}
+       onSubmit={(values, setSubmitting, resetForm) => handleSubmit(values, setSubmitting, resetForm)}
      >
        {(props) => {
         return (
@@ -225,7 +233,7 @@ const TradeExecution = () => {
                   style={divStyled}
                 >
                   <label htmlFor="trade_date" style={labelStyeled}>Trade Date</label>
-                  <Field id="trade_date" name="trade_date" placeholder="2023-09-20" style={{...fieldStyle, width: '90%'}} type="date" min="2018-01-01"/>
+                  <Field id="trade_date" name="trade_date" placeholder="2023-09-20" style={{...fieldStyle, width: '90%'}} type="date"/>
                   <ErrorMessage name="trade_date" component="div" />
                 </div>
                 <div
@@ -299,7 +307,7 @@ const TradeExecution = () => {
                 style={divStyled}
               >
                 <label htmlFor="cash_amount" style={labelStyeled}>Cash Amount</label>
-                <Field id="cash_amount" name="cash_amount" placeholder="GBP" style={{...fieldStyle, width: '90%'}} type='number'/>
+                <Field id="cash_amount" name="cash_amount" placeholder="234" style={{...fieldStyle, width: '90%'}} type='number'/>
                 <ErrorMessage name="cash_amount" component="div" />
               </div>
               <div
