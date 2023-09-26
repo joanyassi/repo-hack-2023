@@ -34,6 +34,15 @@ public class TradeEvent {
     @Lob
     private String after;
 
+    private String participant;
+
+    public String getParticipant() {
+        return participant;
+    }
+
+    public void setParticipant(String participant) {
+        this.participant = participant;
+    }
 
     public Long getId() {
         return id;

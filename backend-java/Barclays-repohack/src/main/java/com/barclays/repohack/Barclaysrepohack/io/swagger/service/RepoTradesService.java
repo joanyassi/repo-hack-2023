@@ -18,10 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class RepoTradesService {
@@ -33,6 +30,7 @@ public class RepoTradesService {
 
     @Autowired
     ResourceLoader resourceLoader;
+
 
     @Autowired
     public RepoTradesService(RestTemplate restTemplate, TradeRepository tradeRepository, TradeEventRepository tradeEventRepository){
@@ -52,6 +50,7 @@ public class RepoTradesService {
         if(HttpStatus.valueOf(response.getStatusCodeValue()).is2xxSuccessful()) {
            tradeRepository.save(new Trade(Objects.requireNonNull(response.getBody()).getTradeId(), Objects.requireNonNull(requestEntity.getBody()).getBuyer().getBuyerName(), Objects.requireNonNull(requestEntity.getBody()).getSeller().getSellerName()));
            saveOrUpdateTradeCycle(response.getBody());
+
        }
         return response;
     }
@@ -63,13 +62,7 @@ public class RepoTradesService {
         if(HttpStatus.valueOf(response.getStatusCodeValue()).is2xxSuccessful()) {
             RepoTradeSubmissionResponse repoTradeResponse = response.getBody();
             assert repoTradeResponse != null;
-            Trade trade = tradeRepository.findByTradeIdEquals(repoTradeResponse.getTradeId());
-            if(trade !=null){
-                TradeEvent tradeEvent = new TradeEvent();
-                tradeEvent.setTradeId(trade);
-                tradeEvent.setEvent(repoTradeResponse.getTradeStatus());
-                tradeEventRepository.save(tradeEvent);
-            }
+            saveOrUpdateTradeCycle(response.getBody());
         }
         return response;
     }
@@ -107,6 +100,7 @@ public class RepoTradesService {
         if(trade !=null){
             TradeEvent tradeEvent = new TradeEvent();
             tradeEvent.setTradeId(trade);
+            tradeEvent.setParticipant(trade.getBuyer() + " & " + trade.getSeller());
             tradeEvent.setEvent(repoTradeResponse.getTradeStatus());
             tradeEventRepository.save(tradeEvent);
         }
