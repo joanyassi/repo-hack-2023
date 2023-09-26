@@ -13,9 +13,8 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
+import Logo from '../../assets/CAPMF.png'
 
 const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -37,21 +36,26 @@ const Header = () => {
 	return (
         <>
         {!isHomePage ?
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', textAlign: 'center' }}>
-          <Typography sx={{ minWidth: 30 }}>Welcome, <b>{id.toUpperCase()}</b>!</Typography>
-          <Tooltip title="Account settings">
-            <IconButton
-              onClick={handleClick}
-              size="small"
-              sx={{ ml: 2 }}
-              aria-controls={open ? 'account-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-            >
-              <Avatar sx={{ width: 32, height: 32 }}>{id.split('')[0].toUpperCase()}</Avatar>
-            </IconButton>
-          </Tooltip>
-        </Box> : null}
+        <div style={{boxShadow: "0 0 0 0 #0474ac36, 0 2px 20px 0 rgba(0, 0, 0, 0.19)", display: 'flex', justifyContent: 'space-between', height: '4rem'}}>
+          <div style={{height: '3rem', width: "13rem", alignSelf: 'center'}}>
+            <img src={Logo} alt="" style={{height: '100%'}}/>
+          </div>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', textAlign: 'center', }}>
+            <Typography sx={{ minWidth: 30 }}>Welcome, <b>{id.toUpperCase()}</b>!</Typography>
+            <Tooltip title="Account settings">
+              <IconButton
+                onClick={handleClick}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls={open ? 'account-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+              >
+                <Avatar sx={{ width: 32, height: 32 }}>{id.split('')[0].toUpperCase()}</Avatar>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </div>  : null}
         <Menu
           anchorEl={anchorEl}
           id="account-menu"

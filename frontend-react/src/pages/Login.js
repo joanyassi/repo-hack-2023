@@ -89,7 +89,7 @@ function App() {
         </MDBCol>
 
         <MDBCol col='6'>
-          <img src="https://mdbootstrap.com/img/new/ecommerce/vertical/004.jpg" class="w-100 rounded-4 shadow-4"
+          <img src="https://images.pexels.com/photos/3610042/pexels-photo-3610042.jpeg?auto=compress&cs=tinysrgb&w=600" class="w-100 rounded-4 shadow-4"
             alt="" fluid/>
         </MDBCol>
 
