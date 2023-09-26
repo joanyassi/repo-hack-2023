@@ -13,6 +13,6 @@ Alternatively you can use the [Spring Boot Maven plugin](https://docs.spring.io/
 
 ```shell
 Go to the command prompt where the repo is cloned
-run mvn clean install -- this command will download all the dependencies
-run mvn spring-boot:run -- to start the server
+run mvnw clean install -- this command will download all the dependencies
+run mvnw spring-boot:run -- to start the server
 ```
