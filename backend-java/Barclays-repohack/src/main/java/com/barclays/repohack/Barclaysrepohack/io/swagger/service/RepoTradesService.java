@@ -47,7 +47,7 @@ public class RepoTradesService {
         this.tradeEventRepository = tradeEventRepository;
     }
 
-    public ResponseEntity<String>  createTradeExecutionRequest(HttpEntity requestEntity, RepoTradeExecutionSubmissionRequest request) throws JsonProcessingException {
+    public ResponseEntity<String>  createTradeExecutionRequest(HttpEntity requestEntity, RepoTradeExecutionSubmissionRequest request, String buyer, String seller) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         ResponseEntity<String> response =  restTemplate.exchange(
@@ -55,7 +55,16 @@ public class RepoTradesService {
         RepoTradeSubmissionResponse repoTradeSubmissionResponse = objectMapper.readValue(response.getBody(), RepoTradeSubmissionResponse.class);
         //ResponseEntity<RepoTradeSubmissionResponse> response = tradeStatus("UC2Q0EKXFH6260", "TRADE_ACCEPTED");
         if(HttpStatus.valueOf(response.getStatusCodeValue()).is2xxSuccessful()) {
-           tradeRepository.save(new Trade(repoTradeSubmissionResponse.getTradeId(), request.getBuyer().getBuyerName(), request.getSeller().getSellerName()));
+           Trade trade = tradeRepository.findByTradeIdEquals(repoTradeSubmissionResponse.getTradeId());
+           if(trade == null){
+               tradeRepository.save(new Trade(repoTradeSubmissionResponse.getTradeId(), buyer, seller));
+           }
+           else{
+               trade.setBuyer(buyer);
+               trade.setSeller(seller);
+               tradeRepository.save(trade);
+           }
+
            saveOrUpdateTradeCycle(repoTradeSubmissionResponse);
        }
         return response;
@@ -139,8 +148,8 @@ public class RepoTradesService {
         URI uri = uriComponentsBuilder.queryParam("tradeId", tradeId).queryParam("fmi", fmi).build().toUri();
         ResponseEntity<TradeWorkflowStatusResponse> response = restTemplate.exchange(
                 uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);
-        Trade trade = tradeRepository.findByTradeIdEquals(tradeId);
-        List<TradeEvent> tradeEvent = tradeEventRepository.findByTradeId(trade.getId());
+        //Trade trade = tradeRepository.findByTradeIdEquals(tradeId);
+        //List<TradeEvent> tradeEvent = tradeEventRepository.findByTradeId(trade.getId());
         /*for(TradeEvent te: tradeEvent){
             List<WorkflowEventData> wfedList = new ArrayList<>();
             if(te.getEvent().equals("TRADE_ACCEPTED")){

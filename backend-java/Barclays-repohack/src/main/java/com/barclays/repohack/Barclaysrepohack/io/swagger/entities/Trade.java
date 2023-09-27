@@ -1,5 +1,6 @@
 package com.barclays.repohack.Barclaysrepohack.io.swagger.entities;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 
 @Entity
