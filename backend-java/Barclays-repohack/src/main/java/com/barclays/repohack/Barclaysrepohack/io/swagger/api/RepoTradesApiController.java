@@ -81,8 +81,8 @@ public class RepoTradesApiController implements RepoTradesApi {
                         new HttpEntity<>(body.toString(), headers);
         ObjectMapper jsonObjectMapper = new ObjectMapper();
         RepoTradeExecutionSubmissionRequest newJsonNode = jsonObjectMapper.treeToValue(body, RepoTradeExecutionSubmissionRequest.class);
-        String buyer = xParticipantId.equalsIgnoreCase(newJsonNode.getBuyer().getBuyerName())? newJsonNode.getBuyer().getBuyerName() : null;
-        String seller = xParticipantId.equalsIgnoreCase(newJsonNode.getSeller().getSellerName())? newJsonNode.getSeller().getSellerName() : null;
+        String buyer = xFinancialMemberId.equalsIgnoreCase(newJsonNode.getBuyer().getBuyerName())? newJsonNode.getBuyer().getBuyerName() : null;
+        String seller = xFinancialMemberId.equalsIgnoreCase(newJsonNode.getSeller().getSellerName())? newJsonNode.getSeller().getSellerName() : null;
         return repoTradesService.createTradeExecutionRequest(requestEntity, newJsonNode, buyer, seller);
     }
 

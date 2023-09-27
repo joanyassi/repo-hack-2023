@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -88,7 +89,7 @@ public class RepoTradesService {
         HttpHeaders httpHeaders = requestEntity.getHeaders();
         TradeBusinessEventsQueryRequest tradeBusinessRequest = new TradeBusinessEventsQueryRequest();
         tradeBusinessRequest.setTradeId(tradeId);
-        tradeBusinessRequest.setFmi("TRADE_CLEARING_SERVICE");
+        tradeBusinessRequest.setFmi("TRADE_MATCHING_SERVICE");
         tradeBusinessRequest.fromDate("2023-09-27T07:27:08.943Z");
         tradeBusinessRequest.toDate("2023-09-27T22:27:08.943Z");
         ObjectMapper Obj = new ObjectMapper();
@@ -102,26 +103,34 @@ public class RepoTradesService {
                 new HttpEntity<>(jsonStr, httpHeaders);
         TradeBusinessEventsQueryResponse businessEvents = null;
         List<BusinessEventData> businessEventData = null;
+        JsonNode data= null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String response  = getBusinessEvents(tradeBusinessEventRequest).getBody();
             businessEvents = objectMapper.readValue(response, TradeBusinessEventsQueryResponse.class);
 
             assert businessEvents != null;
-            businessEventData = businessEvents.getTradeClearingService();
+            businessEventData = businessEvents.getTradeMatchingService();
+            data = businessEventData.get(0).getBusinessEvents().get(0).getBusinessEventData();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
          /* ResponseEntity<RepoTradeSubmissionResponse> response =  restTemplate.exchange(
                 "https://repohack2023.nayaone.com/repoTrades/clearing", HttpMethod.POST, requestEntity, RepoTradeSubmissionResponse.class);*/
-        ClearingRequestBody clearingRequestBody = new ClearingRequestBody();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        com.fasterxml.jackson.databind.JsonNode node = mapper.convertValue(businessEventData, JsonNode.class);
-        clearingRequestBody.setBusinessEventData(node);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json;
+        try {
+            json = ow.writeValueAsString(data);
+            json = "{\n" +
+                    "  \"businessEventData\":" + json + "}";
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        HttpEntity<String> tradeClearingEventRequest =
+                new HttpEntity<>(json, httpHeaders);
         ResponseEntity<RepoTradeSubmissionResponse> response =  restTemplate.exchange(
-                "https://repohack2023.nayaone.com/repoTrades/clearing", HttpMethod.POST, requestEntity, RepoTradeSubmissionResponse.class);
+                "https://repohack2023.nayaone.com/repoTrades/clearing", HttpMethod.POST, tradeClearingEventRequest, RepoTradeSubmissionResponse.class);
         if(HttpStatus.valueOf(response.getStatusCodeValue()).is2xxSuccessful()) {
             RepoTradeSubmissionResponse repoTradeResponse = response.getBody();
             assert repoTradeResponse != null;

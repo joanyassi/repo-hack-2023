@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.barclays.repohack.Barclaysrepohack.io.swagger.model.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
@@ -26,7 +26,7 @@ public class BusinessEventDto   {
   private Integer businessEventSeq = null;
 
   @JsonProperty("businessEventData")
-  private JsonNode businessEventData = null;
+  private com.fasterxml.jackson.databind.JsonNode businessEventData = null;
 
   @JsonProperty("eventCreatedDate")
   private Date eventCreatedDate = null;
@@ -69,7 +69,7 @@ public class BusinessEventDto   {
     this.businessEventSeq = businessEventSeq;
   }
 
-  public BusinessEventDto businessEventData(JsonNode businessEventData) {
+  public BusinessEventDto businessEventData(com.fasterxml.jackson.databind.JsonNode businessEventData) {
     this.businessEventData = businessEventData;
     return this;
   }
@@ -81,7 +81,7 @@ public class BusinessEventDto   {
   @Schema(description = "")
   
     @Valid
-    public JsonNode getBusinessEventData() {
+    public com.fasterxml.jackson.databind.JsonNode getBusinessEventData() {
     return businessEventData;
   }
 
