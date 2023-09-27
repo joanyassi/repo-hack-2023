@@ -73,7 +73,7 @@ export default function VerticalTabs() {
         <Tab label="Testing Connection" {...a11yProps(6)} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <Dashboard />
+        <Dashboard handleSetValue={handleChange}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <TradeExecution />

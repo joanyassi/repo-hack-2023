@@ -113,7 +113,7 @@ const TradeIdForm = ({handleSelect, fmi}) => {
     )
 }
 
-const TradeDetails = ({workflowEvent}) => {
+const TradeDetails = ({workflowEvent, handleSetValue}) => {
 const date = new Date(workflowEvent.eventTimeStamp)
     return (
         <Box>
@@ -143,22 +143,31 @@ const date = new Date(workflowEvent.eventTimeStamp)
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}}>Clear</Button>
-        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}}>Settle</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={(e) => handleSetValue(e, 2)}>Clear</Button>
+        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={(e) => handleSetValue(e, 3)}>Settle</Button>
     </Box>
 </Box>
     )
 }
 
-export default function Dashboard() {
+export default function Dashboard(props) {
   const [value, setValue] = useState(0);
   const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
   // const [listOfTrades, setListOfTrades] = useState([])
-
+  
+  const getTradeList = async () => {
+    const response = await fetchNoHeaders('/repoTrades/tradesList/')
+    console.log({ response })
+  }
 
   useEffect(() => {
-    const response = fetchNoHeaders('/repoTrades/tradesList/')
-    console.log({ response })
+    const term = setInterval(() => {
+      getTradeList()
+    }, 5000)
+
+    console.log({ term })
+
+    return () => clearInterval(term)
   }, [])
 
   const getData = () => {
@@ -175,7 +184,7 @@ export default function Dashboard() {
       console.log({ headers })
 
       const response = fetchData( headers, '/repoTrades/tradeWorkflowStatus/')
-    //   console.log({ response })
+      console.log({ response })
   }
 
   useEffect(() => {
@@ -251,7 +260,7 @@ export default function Dashboard() {
             </div>
 
         <TabPanel value={value} index={0}>
-            <TradeDetails workflowEvent={workflowEvent}/>
+            <TradeDetails workflowEvent={workflowEvent} handleSetValue={props.handleSetValue}/>
         </TabPanel>
         <TabPanel value={value} index={1}>
         <TradeDetails workflowEvent={workflowEventFailed}/>
