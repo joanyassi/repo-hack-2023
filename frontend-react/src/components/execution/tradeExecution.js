@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
 import Users from '../../data/user.json'
 import { postData } from '../../utils/utils';
-import { relativeTimeRounding } from 'moment';
+// import { relativeTimeRounding } from 'moment';
 
 const fieldStyle = {
   padding: '.5rem'
@@ -83,9 +83,7 @@ const TradeExecution = () => {
     trade_id
    }, { setSubmitting, resetForm }) => {
     const fomrValues = {
-      trade_id: {
-        trade_id
-      },
+      trade_id,
       buyer: {
         buyer_name,
         buyer_lei,
@@ -112,7 +110,7 @@ const TradeExecution = () => {
       }
     }
      const headers = {
-      "Content-type": "application/json",
+      "Content-Type": "application/json",
       'x-api-key': process.env.REACT_APP_X_API_KEY,
       'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
       'x-api-request-id': uuidv4(),
@@ -121,6 +119,9 @@ const TradeExecution = () => {
     }
      const response = await postData( headers, '/repoTrades/execution', fomrValues)
      console.log({ response })
+    //  if (response.data.tradeStatus === 'TRADE_ACCEPTED') {
+    //   se
+    //  }
 
        setSubmitting(false);
       // resetForm(getInitialValues(userDetails))
