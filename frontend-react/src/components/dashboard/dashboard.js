@@ -114,10 +114,12 @@ const TradeIdForm = ({handleSelect, fmi}) => {
     )
 }
 
-const TradeDetails = ({workflowEvent, tradeId}) => {
+const TradeDetails = ({workflowStatus, tradeId}) => {
   const {id} = useParams
+  const tradeDetails = workflowStatus.tradeMatchingService.filter(trade => trade.tradeId === tradeId)[0].workflowEvents
+  console.log({ workflowStatus }, {tradeDetails})
   
-  const clearTrade = async () => {
+  const clearTrade = async (date) => {
     const headers = {
       "Content-Type": "application/json",
       'x-api-key': process.env.REACT_APP_X_API_KEY,
@@ -126,13 +128,13 @@ const TradeDetails = ({workflowEvent, tradeId}) => {
       'x-financial-member-id': id.toUpperCase(),
       'x-simulation-date': date
     }
-     const response = await postData( headers, `/repoTrades/execution/${tradeId}`)
+     const response = await postData( headers, `/repoTrades/clearing/${tradeId}`)
      console.log({ response })
   }
 
   const navigate = useNavigate()
-  console.log({ tradeId, workflowEvent })
-const date = new Date(workflowEvent.eventTimeStamp)
+  // console.log({ tradeId, workflowEvent })
+const date = new Date(tradeDetails[0].eventTimeStamp)
     return (
         <Box>
     <h4 style={{marginBottom: '2rem'}}>Workflow Event Details</h4>
@@ -141,15 +143,15 @@ const date = new Date(workflowEvent.eventTimeStamp)
     >
         <div style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Sequence</span>
-            <span style={workflowEventDisplay}>{workflowEvent.eventSequence}</span>
+            <span style={workflowEventDisplay}>{tradeDetails[0].eventSequence}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Trade Status</span>
-            <span style={workflowEventDisplay}>{getTradeStatus(workflowEvent.tradeStatus)}</span>
+            <span style={workflowEventDisplay}>{getTradeStatus(tradeDetails[0].tradeStatus)}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Trade Matching Status</span>
-            <span style={workflowEventDisplay}>{getStatus(workflowEvent.tradeMatchingStatus)}</span>
+            <span style={workflowEventDisplay}>{getStatus(tradeDetails[0].tradeMatchingStatus)}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Time</span>
@@ -161,7 +163,7 @@ const date = new Date(workflowEvent.eventTimeStamp)
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade()}>Clear</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade(date)}>Clear</Button>
         <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => navigate(`/settleTrades/${tradeId}`)} >Settle</Button>
     </Box>
 </Box>
@@ -172,6 +174,11 @@ export default function Dashboard(props) {
   const [value, setValue] = useState(0);
   const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
   const [listOfTrades, setListOfTrades] = useState([])
+  const [workflowStatus, setWorkflowStatus] = useState({
+    tradeMatchingService: null,
+    tradeClearingService: null,
+    tradeSettlementService: null
+  })
   
   const getTradeList = async () => {
     const response = await fetchNoHeaders('/repoTrades/tradesList/')
@@ -181,7 +188,8 @@ export default function Dashboard(props) {
   useEffect(() => {
     const tradeIds = {'tradeId': JSON.parse(localStorage.getItem('tradeId'))}
     setListOfTrades(Object.values(tradeIds))
-    console.log({tradeIds, listOfTrades})
+    // getData(listOfTrades)
+    // console.log({tradeIds, listOfTrades})
     // const term = setInterval(() => {
     //   // getTradeList()
     // }, 5000)
@@ -191,26 +199,30 @@ export default function Dashboard(props) {
     // return () => clearInterval(term)
   }, [])
 
-  const getData = () => {
+  const getData = async (listOfTrades) => {
+    // console.log(listOfTrades[value], {value}, {listOfTrades})
     const headers = {
-        "Accept": "application/json",
+        "Content-Type": "application/json",
         'x-api-key': process.env.REACT_APP_X_API_KEY,
         'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
         'x-api-request-id': uuidv4(),
         'x-financial-member-id': id.toUpperCase(),
-        'tradeId': listOfTrades[value] ,
-        fmi
+        // 'tradeId': listOfTrades[value],
+        // 'fmi': 'TRADE_MATCHING_SERVICE',
+        // 'x-simulation-date': ''
       }
 
-      console.log({ headers })
+      // console.log({ headers })
 
-      const response = fetchData( headers, '/repoTrades/tradeWorkflowStatus/')
-      console.log({ response })
+      const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${listOfTrades[value]}&fmi=TRADE_MATCHING_SERVICE`)
+      setWorkflowStatus(tradeData)
+      // console.log({ tradeData })
   }
 
   useEffect(() => {
-    getData()
-  }, [value])
+    // console.log({ listOfTrades })
+    listOfTrades.length > 0 && getData(listOfTrades)
+  }, [listOfTrades])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -219,13 +231,13 @@ export default function Dashboard(props) {
 
   const {id} = useParams()
 
-  const workflowEvent = {
-    eventSequence: 1,
-    requestId: "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
-    tradeStatus: "TRADE_ACCEPTED",
-    tradeMatchingStatus: "TRADE_MATCH_SUCCESS",
-    eventTimeStamp: "2023-08-25T10:26:24.441Z"
-  }
+  // const workflowEvent = {
+  //   eventSequence: 1,
+  //   requestId: "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
+  //   tradeStatus: "TRADE_ACCEPTED",
+  //   tradeMatchingStatus: "TRADE_MATCH_SUCCESS",
+  //   eventTimeStamp: "2023-08-25T10:26:24.441Z"
+  // }
 
   const workflowEventFailed = {
     eventSequence: 1,
@@ -276,23 +288,13 @@ export default function Dashboard(props) {
                     textColor="primary"
                     style={{backgroundColor: '#0474ac28'}}
                 >
-                {listOfTrades.map((trade, i)=> <Tab label={trade} {...a11yProps(i)}/> )}
+                {listOfTrades?.map((trade, i)=> <Tab label={trade} {...a11yProps(i)}/> )}
                 </Tabs>
             </div>
             
-              {listOfTrades.map((trade, i)=> <TabPanel value={value} index={i}>
-            <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[i]}/>
+              {listOfTrades?.map((trade, i)=> <TabPanel value={value} index={i}>
+            <TradeDetails workflowStatus={workflowStatus} tradeId={trade}/>
         </TabPanel>)}
-            
-{/* 
-        
-        <TabPanel value={value} index={1}>
-        <TradeDetails workflowEvent={workflowEventFailed} tradeId={listOfTrades[1]}/>
-
-        </TabPanel>
-        <TabPanel value={value} index={2}>
-        <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[2]}/>
-        </TabPanel> */}
         </Box>
     </div>
   );
