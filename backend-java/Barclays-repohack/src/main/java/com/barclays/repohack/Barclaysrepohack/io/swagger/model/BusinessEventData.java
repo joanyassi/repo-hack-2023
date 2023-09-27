@@ -22,6 +22,10 @@ public class BusinessEventData   {
   @JsonProperty("tradeId")
   private String tradeId = null;
 
+
+  @JsonProperty("effectiveDate")
+  private String effectiveDate;
+
   @JsonProperty("businessEvents")
   @Valid
   private List<BusinessEventDto> businessEvents = null;
@@ -48,6 +52,13 @@ public class BusinessEventData   {
   public BusinessEventData businessEvents(List<BusinessEventDto> businessEvents) {
     this.businessEvents = businessEvents;
     return this;
+  }
+  public String getEffectiveDate() {
+    return effectiveDate;
+  }
+
+  public void setEffectiveDate(String effectiveDate) {
+    this.effectiveDate = effectiveDate;
   }
 
   public BusinessEventData addBusinessEventsItem(BusinessEventDto businessEventsItem) {
