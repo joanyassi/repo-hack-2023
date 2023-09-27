@@ -64,60 +64,59 @@ function a11yProps(index) {
 
 const fmisArr = [{TRADE_MATCHING_SERVICE: "TRADE MATCHING SERVICE" }, {TRADE_CLEARING_SERVICE: 'TRADE CLEARING SERVICE'}, {TRADE_SETTLEMENT_SERVICE: 'TRADE SETTLEMENT SERVICE'}]
 
-const TradeIdForm = ({handleSelect, fmi}) => {
-    // const handleChange = (e) => {
-    //     console.log(e.target)
-    //     // handleSelect()
-    // }
-    return (
-        <Formik
-        enableReinitialize="true"
-       initialValues={{fmi: 'TRADE MATCHING SERVICE'}}
-       validate={values => {
-       }}
-    //    onSubmit={(values, setSubmitting) => handleSubmit(values, setSubmitting)}
-     >
-       {(props) => {
-        return (
-            <Form
-                style={{    display: 'flex',
-                margin: 'auto',
-                width: '40%',
-                justifyContent: 'space-around', alignItems: 'end', marginBottom: '2rem'}}
-            >
-          <div
-            style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}
-          >
-            <label htmlFor="fmi" style={{paddingBottom: '.4rem'}}>Select a Financial Market Infrastructure</label>
-            <Field
-              as='select'
-              id="fmi" 
-              name="fmi"
-              value={fmi}
-            //   onChange={handleChange}
-              style={{textAlign: 'center', padding: '.3rem 0', borderRadius: '5px'}}
-              onChange={(e) => handleSelect(e.target.value)}
-              >
-                {fmisArr.map(fmi =><option value={Object.keys(fmi)[0]}>{Object.values(fmi)[0]}</option>)}
-              </Field>
-          </div>
-     {/* <Button style={{background: 'red', height: '2rem'}}
-        type='submit'
-        // disabled={props.isSubmitting}
-         variant="contained">Submit</Button> */}
+// const TradeIdForm = ({handleSelect, fmi}) => {
+//     // const handleChange = (e) => {
+//     //     console.log(e.target)
+//     //     // handleSelect()
+//     // }
+//     return (
+//         <Formik
+//         enableReinitialize="true"
+//        initialValues={{fmi: 'TRADE MATCHING SERVICE'}}
+//        validate={values => {
+//        }}
+//     //    onSubmit={(values, setSubmitting) => handleSubmit(values, setSubmitting)}
+//      >
+//        {(props) => {
+//         return (
+//             <Form
+//                 style={{    display: 'flex',
+//                 margin: 'auto',
+//                 width: '40%',
+//                 justifyContent: 'space-around', alignItems: 'end', marginBottom: '2rem'}}
+//             >
+//           <div
+//             style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}
+//           >
+//             <label htmlFor="fmi" style={{paddingBottom: '.4rem'}}>Select a Financial Market Infrastructure</label>
+//             <Field
+//               as='select'
+//               id="fmi" 
+//               name="fmi"
+//               value={fmi}
+//             //   onChange={handleChange}
+//               style={{textAlign: 'center', padding: '.3rem 0', borderRadius: '5px'}}
+//               onChange={(e) => handleSelect(e.target.value)}
+//               >
+//                 {fmisArr.map(fmi =><option value={Object.keys(fmi)[0]}>{Object.values(fmi)[0]}</option>)}
+//               </Field>
+//           </div>
+//      {/* <Button style={{background: 'red', height: '2rem'}}
+//         type='submit'
+//         // disabled={props.isSubmitting}
+//          variant="contained">Submit</Button> */}
 
-     </Form>
-        )
-       }}
-        </Formik>
+//      </Form>
+//         )
+//        }}
+//         </Formik>
        
-    )
-}
+//     )
+// }
 
-const TradeDetails = ({workflowStatus, tradeId}) => {
-  const {id} = useParams
-  const tradeDetails = workflowStatus.tradeMatchingService.filter(trade => trade.tradeId === tradeId)[0].workflowEvents
-  console.log({ workflowStatus }, {tradeDetails})
+const TradeDetails = ({workflowStatus, tradeId, id}) => {
+  const tradeDetails = workflowStatus.tradeMatchingService?.filter(trade => trade.tradeId === tradeId)[0].workflowEvents
+  // console.log({id})
   
   const clearTrade = async (date) => {
     const headers = {
@@ -134,36 +133,36 @@ const TradeDetails = ({workflowStatus, tradeId}) => {
 
   const navigate = useNavigate()
   // console.log({ tradeId, workflowEvent })
-const date = new Date(tradeDetails[0].eventTimeStamp)
+const date = tradeDetails?.length> 0 && new Date(tradeDetails[0]?.eventTimeStamp)
     return (
         <Box>
     <h4 style={{marginBottom: '2rem'}}>Workflow Event Details</h4>
-    <Box
+    {(tradeDetails && tradeDetails?.length> 0) && <Box
         style={{display: 'flex', justifyContent: 'space-around', paddingBottom: '2rem'}}
     >
         <div style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Sequence</span>
-            <span style={workflowEventDisplay}>{tradeDetails[0].eventSequence}</span>
+            <span style={workflowEventDisplay}>{tradeDetails[0]?.eventSequence}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Trade Status</span>
-            <span style={workflowEventDisplay}>{getTradeStatus(tradeDetails[0].tradeStatus)}</span>
+            <span style={workflowEventDisplay}>{getTradeStatus(tradeDetails[0]?.tradeStatus)}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Trade Matching Status</span>
-            <span style={workflowEventDisplay}>{getStatus(tradeDetails[0].tradeMatchingStatus)}</span>
+            <span style={workflowEventDisplay}>{getStatus(tradeDetails[0]?.tradeMatchingStatus)}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Time</span>
             <span style={workflowEventDisplay}>{moment(date).format('MMMM Do YYYY, h:mm:ss a')}</span>
         </div>
 
-    </Box>
+    </Box>}
     <Box 
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade(date)}>Clear</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade()}>Clear</Button>
         <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => navigate(`/settleTrades/${tradeId}`)} >Settle</Button>
     </Box>
 </Box>
@@ -171,6 +170,7 @@ const date = new Date(tradeDetails[0].eventTimeStamp)
 }
 
 export default function Dashboard(props) {
+  const {id} = useParams()
   const [value, setValue] = useState(0);
   const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
   const [listOfTrades, setListOfTrades] = useState([])
@@ -179,99 +179,39 @@ export default function Dashboard(props) {
     tradeClearingService: null,
     tradeSettlementService: null
   })
-  
-  const getTradeList = async () => {
-    const response = await fetchNoHeaders('/repoTrades/tradesList/')
-    console.log({ response })
-  }
+  console.log({id})
+
 
   useEffect(() => {
     const tradeIds = {'tradeId': JSON.parse(localStorage.getItem('tradeId'))}
     setListOfTrades(Object.values(tradeIds))
-    // getData(listOfTrades)
-    // console.log({tradeIds, listOfTrades})
-    // const term = setInterval(() => {
-    //   // getTradeList()
-    // }, 5000)
-
-    // console.log({ term })
-
-    // return () => clearInterval(term)
   }, [])
 
   const getData = async (listOfTrades) => {
-    // console.log(listOfTrades[value], {value}, {listOfTrades})
     const headers = {
         "Content-Type": "application/json",
         'x-api-key': process.env.REACT_APP_X_API_KEY,
         'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
         'x-api-request-id': uuidv4(),
-        'x-financial-member-id': id.toUpperCase(),
-        // 'tradeId': listOfTrades[value],
-        // 'fmi': 'TRADE_MATCHING_SERVICE',
-        // 'x-simulation-date': ''
+        'x-financial-member-id': id.toUpperCase()
       }
-
-      // console.log({ headers })
-
       const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${listOfTrades[value]}&fmi=TRADE_MATCHING_SERVICE`)
       setWorkflowStatus(tradeData)
-      // console.log({ tradeData })
   }
 
   useEffect(() => {
-    // console.log({ listOfTrades })
     listOfTrades.length > 0 && getData(listOfTrades)
   }, [listOfTrades])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    // getData()
   };
-
-  const {id} = useParams()
-
-  // const workflowEvent = {
-  //   eventSequence: 1,
-  //   requestId: "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
-  //   tradeStatus: "TRADE_ACCEPTED",
-  //   tradeMatchingStatus: "TRADE_MATCH_SUCCESS",
-  //   eventTimeStamp: "2023-08-25T10:26:24.441Z"
-  // }
-
-  const workflowEventFailed = {
-    eventSequence: 1,
-    requestId: "5e970526-6ebe-4d9f-bab5-9f05fa07dcfd",
-    tradeStatus: "TRADE_REJECTED",
-    tradeMatchingStatus: "TRADE_MATCH_FAILURE",
-    eventTimeStamp: "2023-08-25T10:26:24.441Z"
-  }
-
-// const handleSubmit = ({fmi}, setSubmitting) => {
-//     const headers = {
-//         "Accept": "application/json",
-//         'x-api-key': process.env.REACT_APP_X_API_KEY,
-//         'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
-//         'x-api-request-id': uuidv4(),
-//         'x-financial-member-id': id.toUpperCase(),
-//         'tradeId': listOfTrades[value] ,
-//         fmi
-//       }
-
-//       console.log({ headers })
-
-//       const response = fetchData( headers, '/repoTrades/execution')
-//       console.log({ response })
-//       setSubmitting(false);
-
-// }
-
 
   return (
     <div
         style={{minHeight: '90vh'}}
     >
-        <TradeIdForm handleSelect={setFmi} fmi={fmi}/>
+        {/* <TradeIdForm handleSelect={setFmi} fmi={fmi}/> */}
 
         <Box
         sx={{display: 'flex', height: "auto", border: '1px solid #0474ac', borderRadius: '10px' }}
@@ -293,7 +233,7 @@ export default function Dashboard(props) {
             </div>
             
               {listOfTrades?.map((trade, i)=> <TabPanel value={value} index={i}>
-            <TradeDetails workflowStatus={workflowStatus} tradeId={trade}/>
+            <TradeDetails workflowStatus={workflowStatus} tradeId={trade} id={id}/>
         </TabPanel>)}
         </Box>
     </div>
