@@ -119,14 +119,14 @@ const TradeExecution = () => {
     }
      const response = await postData( headers, '/repoTrades/execution', fomrValues)
      console.log({ response })
-    //  if (response.data.tradeStatus === 'TRADE_ACCEPTED') {
-    //   se
-    //  }
+     if (response.status === 202 ) {
+      localStorage.setItem('tradeId', JSON.stringify(response.data.tradeId))
+     }
 
        setSubmitting(false);
       // resetForm(getInitialValues(userDetails))
-      // window.location.reload();
-      console.log(`/dashboard/${id}`)
+      window.location.reload();
+      // console.log(`/dashboard/${id}`)
       
   }
 
