@@ -21,7 +21,7 @@ public class TradeEvent {
     private Trade tradeId;
 
     @CreationTimestamp
-    private java.time.LocalDateTime timestamp;
+    private Date timestamp;
 
     @Size(max = 200)
     private String event;
@@ -60,11 +60,11 @@ public class TradeEvent {
         this.tradeId = tradeId;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

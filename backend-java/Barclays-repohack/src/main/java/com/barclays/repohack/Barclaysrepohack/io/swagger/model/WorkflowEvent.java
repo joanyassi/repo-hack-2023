@@ -1,11 +1,11 @@
 package com.barclays.repohack.Barclaysrepohack.io.swagger.model;
 
+import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
-import org.threeten.bp.OffsetDateTime;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -31,7 +31,7 @@ public class WorkflowEvent   {
   private String tradeMatchingStatus = null;
 
   @JsonProperty("eventTimeStamp")
-  private OffsetDateTime eventTimeStamp = null;
+  private Date eventTimeStamp = null;
 
   public WorkflowEvent eventSequence(Integer eventSequence) {
     this.eventSequence = eventSequence;
@@ -110,7 +110,7 @@ public class WorkflowEvent   {
     this.tradeMatchingStatus = tradeMatchingStatus;
   }
 
-  public WorkflowEvent eventTimeStamp(OffsetDateTime eventTimeStamp) {
+  public WorkflowEvent eventTimeStamp(Date eventTimeStamp) {
     this.eventTimeStamp = eventTimeStamp;
     return this;
   }
@@ -122,11 +122,11 @@ public class WorkflowEvent   {
   @Schema(example = "2023-08-25T10:26:24.441Z", description = "")
   
     @Valid
-    public OffsetDateTime getEventTimeStamp() {
+    public Date getEventTimeStamp() {
     return eventTimeStamp;
   }
 
-  public void setEventTimeStamp(OffsetDateTime eventTimeStamp) {
+  public void setEventTimeStamp(Date eventTimeStamp) {
     this.eventTimeStamp = eventTimeStamp;
   }
 

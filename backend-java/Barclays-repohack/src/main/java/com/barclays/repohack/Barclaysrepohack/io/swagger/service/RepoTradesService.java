@@ -14,6 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,9 +91,40 @@ public class RepoTradesService {
         return response;
     }
 
-    public ResponseEntity<TradeWorkflowStatusResponse> getWorkflowEvents(HttpEntity requestEntity, URI uri){
-        return restTemplate.exchange(
-                uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);
+    public ResponseEntity<TradeWorkflowStatusResponse> getWorkflowEvents(HttpEntity requestEntity, String tradeId, String fmi){
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://repohack2023.nayaone.com/repoTrades/tradeWorkflowStatus");
+        URI uri = uriComponentsBuilder.queryParam("tradeId", tradeId).queryParam("fmi", fmi).build().toUri();
+        Trade trade = tradeRepository.findByTradeIdEquals(tradeId);
+        List<TradeEvent> tradeEvent = tradeEventRepository.findByTradeId(trade.getId());
+        TradeWorkflowStatusResponse response = new TradeWorkflowStatusResponse();
+        for(TradeEvent te: tradeEvent){
+            List<WorkflowEventData> wfedList = new ArrayList<>();
+            if(te.getEvent().equals("TRADE_ACCEPTED")){
+                WorkflowEventData wfed = new WorkflowEventData();
+                wfed.setWorkflowEvents(getWorkflowEventDataList(te));
+                wfedList.add(wfed);
+                response.setTradeMatchingService(wfedList);
+            }
+            if(te.getEvent().equals("TRADE_CLEARED")){
+                WorkflowEventData wfed = new WorkflowEventData();
+                wfed.setWorkflowEvents(getWorkflowEventDataList(te));
+                wfedList.add(wfed);
+                response.setTradeMatchingService(wfedList);
+            }
+            if(te.getEvent().equals("TRADE_SETTLED")){
+                WorkflowEventData wfed = new WorkflowEventData();
+                wfed.setWorkflowEvents(getWorkflowEventDataList(te));
+                wfedList.add(wfed);
+                response.setTradeMatchingService(wfedList);
+            }
+
+        }
+
+        return ResponseEntity.ok()
+                .body(response);
+        /*return restTemplate.exchange(
+                uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);*/
     }
 
     public void saveOrUpdateTradeCycle(RepoTradeSubmissionResponse repoTradeResponse){
@@ -125,10 +157,29 @@ public class RepoTradesService {
                 .body(response);
     }
 
+    public static ResponseEntity<TradeWorkflowStatusResponse> tradeWorkFlowEvents(TradeWorkflowStatusResponse tradeWorkflowStatusResponse){
+
+        TradeWorkflowStatusResponse response = new TradeWorkflowStatusResponse();
+        response.setTradeMatchingService(tradeWorkflowStatusResponse.getTradeMatchingService());
+        response.setTradeClearingService(tradeWorkflowStatusResponse.getTradeClearingService());
+        response.setTradeSettlementService(tradeWorkflowStatusResponse.getTradeSettlementService());
+        return ResponseEntity.ok()
+                .body(response);
+    }
+
     public List<Trade> getTradesList(){
         return tradeRepository.findAll();
     }
 
+    public static List<WorkflowEvent> getWorkflowEventDataList(TradeEvent te){
+        WorkflowEvent wfe = new WorkflowEvent();
+        wfe.setEventTimeStamp(te.getTimestamp());
+        wfe.setTradeStatus(te.getEvent());
+        wfe.setTradeMatchingStatus(te.getEvent());
+        List<WorkflowEvent> wfeList = new ArrayList<>();
+        wfeList.add(wfe);
+        return wfeList;
+    }
 
 }
 
