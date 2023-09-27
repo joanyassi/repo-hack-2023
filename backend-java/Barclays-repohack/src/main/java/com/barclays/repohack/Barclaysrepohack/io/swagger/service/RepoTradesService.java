@@ -73,20 +73,31 @@ public class RepoTradesService {
         return response;
     }
 
-    public ResponseEntity<RepoTradeSubmissionResponse>  tradeClearing(HttpEntity<ClearingRequestBody> requestEntity){
+    public ResponseEntity<RepoTradeSubmissionResponse>  tradeClearing(HttpEntity<ClearingRequestBody> requestEntity, String tradeId){
 
         //ResponseEntity<RepoTradeSubmissionResponse> response = tradeStatus("UC2Q0EKXFH6260","TRADE_CLEARED");
         HttpHeaders httpHeaders = requestEntity.getHeaders();
         TradeBusinessEventsQueryRequest tradeBusinessRequest = new TradeBusinessEventsQueryRequest();
-        tradeBusinessRequest.setTradeId("tradeId");
-        tradeBusinessRequest.fromDate(LocalDateTime.now());
-        tradeBusinessRequest.toDate(LocalDateTime.now().plusDays(1));
-        HttpEntity<TradeBusinessEventsQueryRequest> tradeBusinessEventRequest =
-                new HttpEntity<>(tradeBusinessRequest, httpHeaders);
+        tradeBusinessRequest.setTradeId(tradeId);
+        tradeBusinessRequest.setFmi("TRADE_CLEARING_SERVICE");
+        tradeBusinessRequest.fromDate("2023-09-27T07:27:08.943Z");
+        tradeBusinessRequest.toDate("2023-09-27T22:27:08.943Z");
+        ObjectMapper Obj = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = Obj.writeValueAsString(tradeBusinessRequest);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        HttpEntity<String> tradeBusinessEventRequest =
+                new HttpEntity<>(jsonStr, httpHeaders);
         TradeBusinessEventsQueryResponse businessEvents = null;
         List<BusinessEventData> businessEventData = null;
         try {
-            businessEvents = getBusinessEvents(tradeBusinessEventRequest).getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            String response  = getBusinessEvents(tradeBusinessEventRequest).getBody();
+            businessEvents = objectMapper.readValue(response, TradeBusinessEventsQueryResponse.class);
+
             assert businessEvents != null;
             businessEventData = businessEvents.getTradeClearingService();
 
@@ -109,7 +120,7 @@ public class RepoTradesService {
         }
         return response;
     }
-    public ResponseEntity<TradeBusinessEventsQueryResponse> getBusinessEvents (HttpEntity<TradeBusinessEventsQueryRequest> requestEntity) throws IOException {
+    public ResponseEntity<String> getBusinessEvents (HttpEntity<String> requestEntity) throws IOException {
 
         /*ObjectMapper objectMapper = new ObjectMapper();
         Resource classPathResource = resourceLoader.getResource("classpath:tradeBusinessEventQueryResponse.json");
@@ -118,7 +129,7 @@ public class RepoTradesService {
         ResponseEntity<TradeBusinessEventsQueryResponse> response = tradeBusinessEvents(tradeBusinessEventsJson);
         */
         return restTemplate.exchange(
-                "https://repohack2023.nayaone.com/repoTrades/tradeBusinessEventsQuery", HttpMethod.POST, requestEntity, TradeBusinessEventsQueryResponse.class);
+                "https://repohack2023.nayaone.com/repoTrades/tradeBusinessEventsQuery", HttpMethod.POST, requestEntity, String.class);
 
     }
 
@@ -126,10 +137,11 @@ public class RepoTradesService {
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://repohack2023.nayaone.com/repoTrades/tradeWorkflowStatus");
         URI uri = uriComponentsBuilder.queryParam("tradeId", tradeId).queryParam("fmi", fmi).build().toUri();
+        ResponseEntity<TradeWorkflowStatusResponse> response = restTemplate.exchange(
+                uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);
         Trade trade = tradeRepository.findByTradeIdEquals(tradeId);
         List<TradeEvent> tradeEvent = tradeEventRepository.findByTradeId(trade.getId());
-        TradeWorkflowStatusResponse response = new TradeWorkflowStatusResponse();
-        for(TradeEvent te: tradeEvent){
+        /*for(TradeEvent te: tradeEvent){
             List<WorkflowEventData> wfedList = new ArrayList<>();
             if(te.getEvent().equals("TRADE_ACCEPTED")){
                 WorkflowEventData wfed = new WorkflowEventData();
@@ -150,10 +162,9 @@ public class RepoTradesService {
                 response.setTradeMatchingService(wfedList);
             }
 
-        }
+        }*/
 
-        return ResponseEntity.ok()
-                .body(response);
+        return response;
         /*return restTemplate.exchange(
                 uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);*/
     }

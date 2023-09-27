@@ -26,10 +26,10 @@ public class TradeBusinessEventsQueryRequest   {
   private String fmi = null;
 
   @JsonProperty("fromDate")
-  private LocalDateTime fromDate = null;
+  private String fromDate = null;
 
   @JsonProperty("toDate")
-  private LocalDateTime toDate = null;
+  private String toDate = null;
 
   public TradeBusinessEventsQueryRequest tradeId(String tradeId) {
     this.tradeId = tradeId;
@@ -69,7 +69,7 @@ public class TradeBusinessEventsQueryRequest   {
     this.fmi = fmi;
   }
 
-  public TradeBusinessEventsQueryRequest fromDate(LocalDateTime fromDate) {
+  public TradeBusinessEventsQueryRequest fromDate(String fromDate) {
     this.fromDate = fromDate;
     return this;
   }
@@ -81,15 +81,15 @@ public class TradeBusinessEventsQueryRequest   {
   @Schema(example = "2023-08-25T10:27:08.943Z", description = "")
   
     @Valid
-    public LocalDateTime getFromDate() {
+    public String getFromDate() {
     return fromDate;
   }
 
-  public void setFromDate(LocalDateTime fromDate) {
+  public void setFromDate(String fromDate) {
     this.fromDate = fromDate;
   }
 
-  public TradeBusinessEventsQueryRequest toDate(LocalDateTime toDate) {
+  public TradeBusinessEventsQueryRequest toDate(String toDate) {
     this.toDate = toDate;
     return this;
   }
@@ -101,11 +101,11 @@ public class TradeBusinessEventsQueryRequest   {
   @Schema(example = "2023-08-25T10:27:08.943Z", description = "")
   
     @Valid
-    public LocalDateTime getToDate() {
+    public String getToDate() {
     return toDate;
   }
 
-  public void setToDate(LocalDateTime toDate) {
+  public void setToDate(String toDate) {
     this.toDate = toDate;
   }
 

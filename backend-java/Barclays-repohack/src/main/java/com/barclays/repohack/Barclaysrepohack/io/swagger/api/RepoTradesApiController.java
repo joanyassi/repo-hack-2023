@@ -51,7 +51,7 @@ public class RepoTradesApiController implements RepoTradesApi {
             headers.set("x-api-request-id", String.valueOf(xApiRequestId));
             headers.set("x-financial-member-id", xFinancialMemberId);
             headers.set("x-simulation-date", xSimulationDate);
-            HttpEntity<TradeBusinessEventsQueryRequest> requestEntity = new HttpEntity<>(body, headers);
+            HttpEntity requestEntity = new HttpEntity<>(body, headers);
             return repoTradesService.getBusinessEvents(requestEntity);
     }
 
@@ -61,6 +61,8 @@ public class RepoTradesApiController implements RepoTradesApi {
             headers.set("x-api-key", xApiKey);
             headers.set("x-api-request-id", String.valueOf(xApiRequestId));
             headers.set("x-financial-member-id", xFinancialMemberId);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             HttpEntity httpEntity = new HttpEntity<>(headers);
             return repoTradesService.getWorkflowEvents(httpEntity, tradeId, fmi);
 
@@ -96,16 +98,19 @@ public class RepoTradesApiController implements RepoTradesApi {
         return repoTradesService.postSettlementRequest(requestEntity);
     }
 
-    public ResponseEntity<RepoTradeSubmissionResponse> tradeClearingRequest(@Parameter(in = ParameterIn.HEADER, description = "Unique request identifier for the request." ,required=true,schema=@Schema()) @RequestHeader(value="x-api-request-id", required=true) UUID xApiRequestId,@Parameter(in = ParameterIn.HEADER, description = "Unique team identifier provided to your team." ,required=true,schema=@Schema()) @RequestHeader(value="x-participant-id", required=true) String xParticipantId,@Parameter(in = ParameterIn.HEADER, description = "Name of the party submitting the trade (should match with the value specified in the input business event data). Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02." ,required=true,schema=@Schema()) @RequestHeader(value="x-financial-member-id", required=true) String xFinancialMemberId,@Parameter(in = ParameterIn.HEADER, description = "API authorization key provided to your team." ,required=true,schema=@Schema()) @RequestHeader(value="x-api-key", required=true) String xApiKey,@Parameter(in = ParameterIn.HEADER, description = "Date on which the trade will be submitted for processing to the FMI. Note that this parameter enables you to fast forward through the trade lifecycle for the purpose of the hackathon. The value must be specified in ISO date format(yyyy-MM-dd)." ,required=true,schema=@Schema()) @RequestHeader(value="x-simulation-date", required=true) String xSimulationDate,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody ClearingRequestBody body) {
+    public ResponseEntity<RepoTradeSubmissionResponse> tradeClearingRequest(@Parameter(in = ParameterIn.HEADER, description = "Unique request identifier for the request." ,required=true,schema=@Schema()) @RequestHeader(value="x-api-request-id", required=true) UUID xApiRequestId,@Parameter(in = ParameterIn.HEADER, description = "Unique team identifier provided to your team." ,required=true,schema=@Schema()) @RequestHeader(value="x-participant-id", required=true) String xParticipantId,@Parameter(in = ParameterIn.HEADER, description = "Name of the party submitting the trade (should match with the value specified in the input business event data). Possible values are CLIENT01,CLIENT02,CLIENT03 OR DEALER01,DEALER02." ,required=true,schema=@Schema()) @RequestHeader(value="x-financial-member-id", required=true) String xFinancialMemberId,@Parameter(in = ParameterIn.HEADER, description = "API authorization key provided to your team." ,required=true,schema=@Schema()) @RequestHeader(value="x-api-key", required=true) String xApiKey,@Parameter(in = ParameterIn.HEADER, description = "Date on which the trade will be submitted for processing to the FMI. Note that this parameter enables you to fast forward through the trade lifecycle for the purpose of the hackathon. The value must be specified in ISO date format(yyyy-MM-dd)." ,required=true,schema=@Schema()) @RequestHeader(value="x-simulation-date", required=true) String xSimulationDate,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody ClearingRequestBody body, @RequestParam String tradeId) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-participant-id", xParticipantId);
         headers.set("x-api-key", xApiKey);
         headers.set("x-api-request-id", String.valueOf(xApiRequestId));
         headers.set("x-financial-member-id", xFinancialMemberId);
         headers.set("x-simulation-date", xSimulationDate);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        ObjectMapper Obj = new ObjectMapper();
         HttpEntity<ClearingRequestBody> requestEntity =
                 new HttpEntity<>(body, headers);
-        return repoTradesService.tradeClearing(requestEntity);
+        return repoTradesService.tradeClearing(requestEntity, tradeId);
     }
 
     public ResponseEntity<List<Trade>> getAllTrades(){
