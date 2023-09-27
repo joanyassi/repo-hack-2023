@@ -23,10 +23,6 @@ const workflowEventDisplay = {
     backgroundColor: 'white'
 }
 
-// const listOfTrades = [
-//     'UC2Q0EKXFH6260', 'UC2Q0EKXFH6264', 'UC2Q0EKXFH6232'
-// ]
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -60,9 +56,6 @@ function a11yProps(index) {
     'aria-controls': `vertical-tabpanel-${index}`
   };
 }
-
-
-const fmisArr = [{TRADE_MATCHING_SERVICE: "TRADE MATCHING SERVICE" }, {TRADE_CLEARING_SERVICE: 'TRADE CLEARING SERVICE'}, {TRADE_SETTLEMENT_SERVICE: 'TRADE SETTLEMENT SERVICE'}]
 
 // const TradeIdForm = ({handleSelect, fmi}) => {
 //     // const handleChange = (e) => {
@@ -115,8 +108,7 @@ const fmisArr = [{TRADE_MATCHING_SERVICE: "TRADE MATCHING SERVICE" }, {TRADE_CLE
 // }
 
 const TradeDetails = ({workflowStatus, tradeId, id}) => {
-  const tradeDetails = workflowStatus.tradeMatchingService?.filter(trade => trade.tradeId === tradeId)[0].workflowEvents
-  // console.log({id})
+  const tradeDetails = workflowStatus?.tradeMatchingService?.filter(trade => trade.tradeId === tradeId)[0].workflowEvents
   
   const clearTrade = async (date) => {
     const headers = {
@@ -132,8 +124,7 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
   }
 
   const navigate = useNavigate()
-  // console.log({ tradeId, workflowEvent })
-const date = tradeDetails?.length> 0 && new Date(tradeDetails[0]?.eventTimeStamp)
+  const date = tradeDetails?.length> 0 && new Date(tradeDetails[0]?.eventTimeStamp)
     return (
         <Box>
     <h4 style={{marginBottom: '2rem'}}>Workflow Event Details</h4>
@@ -172,14 +163,12 @@ const date = tradeDetails?.length> 0 && new Date(tradeDetails[0]?.eventTimeStamp
 export default function Dashboard(props) {
   const {id} = useParams()
   const [value, setValue] = useState(0);
-  const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
   const [listOfTrades, setListOfTrades] = useState([])
   const [workflowStatus, setWorkflowStatus] = useState({
     tradeMatchingService: null,
     tradeClearingService: null,
     tradeSettlementService: null
   })
-  console.log({id})
 
 
   useEffect(() => {
@@ -211,8 +200,6 @@ export default function Dashboard(props) {
     <div
         style={{minHeight: '90vh'}}
     >
-        {/* <TradeIdForm handleSelect={setFmi} fmi={fmi}/> */}
-
         <Box
         sx={{display: 'flex', height: "auto", border: '1px solid #0474ac', borderRadius: '10px' }}
         >
@@ -233,7 +220,7 @@ export default function Dashboard(props) {
             </div>
             
               {listOfTrades?.map((trade, i)=> <TabPanel value={value} index={i}>
-            <TradeDetails workflowStatus={workflowStatus} tradeId={trade} id={id}/>
+            {workflowStatus.tradeMatchingService ? <TradeDetails workflowStatus={workflowStatus} tradeId={trade} id={id}/> : <h4>You have no trades at the moment</h4>}
         </TabPanel>)}
         </Box>
     </div>
