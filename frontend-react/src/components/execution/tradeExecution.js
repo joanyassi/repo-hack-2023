@@ -94,7 +94,7 @@ const TradeExecution = () => {
         seller_lei,
         seller_account,
       },
-      tradeDetails: {
+      trade_details: {
         trade_date,
         effective_date,
         maturity_date,
