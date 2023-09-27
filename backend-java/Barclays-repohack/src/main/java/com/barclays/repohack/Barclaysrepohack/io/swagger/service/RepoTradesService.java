@@ -142,12 +142,12 @@ public class RepoTradesService {
 
     }
 
-    public ResponseEntity<TradeWorkflowStatusResponse> getWorkflowEvents(HttpEntity requestEntity, String tradeId, String fmi){
+    public ResponseEntity<String> getWorkflowEvents(HttpEntity requestEntity, String tradeId, String fmi){
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://repohack2023.nayaone.com/repoTrades/tradeWorkflowStatus");
         URI uri = uriComponentsBuilder.queryParam("tradeId", tradeId).queryParam("fmi", fmi).build().toUri();
-        ResponseEntity<TradeWorkflowStatusResponse> response = restTemplate.exchange(
-                uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);
+        ResponseEntity<String> response = restTemplate.exchange(
+                uri, HttpMethod.GET, requestEntity, String.class);
         //Trade trade = tradeRepository.findByTradeIdEquals(tradeId);
         //List<TradeEvent> tradeEvent = tradeEventRepository.findByTradeId(trade.getId());
         /*for(TradeEvent te: tradeEvent){
