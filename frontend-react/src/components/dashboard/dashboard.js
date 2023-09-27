@@ -108,7 +108,13 @@ function a11yProps(index) {
 // }
 
 const TradeDetails = ({workflowStatus, tradeId, id}) => {
-  const tradeDetails = workflowStatus?.tradeMatchingService?.filter(trade => trade.tradeId === tradeId)[0].workflowEvents
+  const tradeDetails = () => {
+    if (workflowStatus.tradeMatchingService) {
+      return workflowStatus?.tradeMatchingService?.filter(trade => trade.tradeId === tradeId)[0]?.workflowEvents
+    } else if (workflowStatus.tradeClearingService) {
+      return workflowStatus?.tradeClearingService?.filter(trade => trade.tradeId === tradeId)[0]?.workflowEvents
+    }
+  }
   
   const clearTrade = async (date) => {
     const headers = {
@@ -124,31 +130,33 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
   }
 
   const navigate = useNavigate()
-  const date = tradeDetails?.length> 0 && new Date(tradeDetails[0]?.eventTimeStamp)
+  const date = tradeDetails()?.length> 0 && new Date(tradeDetails()[0]?.eventTimeStamp)
     return (
         <Box>
     <h4 style={{marginBottom: '2rem'}}>Workflow Event Details</h4>
-    {(tradeDetails && tradeDetails?.length> 0) && <Box
+    {(tradeDetails()?.length> 0) && tradeDetails().map((singleTrade, i) =>
+      <Box
         style={{display: 'flex', justifyContent: 'space-around', paddingBottom: '2rem'}}
     >
         <div style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Sequence</span>
-            <span style={workflowEventDisplay}>{tradeDetails[0]?.eventSequence}</span>
+            <span style={workflowEventDisplay}>{singleTrade.eventSequence}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Trade Status</span>
-            <span style={workflowEventDisplay}>{getTradeStatus(tradeDetails[0]?.tradeStatus)}</span>
+            <span style={workflowEventDisplay}>{getTradeStatus(singleTrade.tradeStatus)}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Trade Matching Status</span>
-            <span style={workflowEventDisplay}>{getStatus(tradeDetails[0]?.tradeMatchingStatus)}</span>
+            <span style={workflowEventDisplay}>{getStatus(singleTrade.tradeMatchingStatus)}</span>
         </div>
         <div  style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Time</span>
             <span style={workflowEventDisplay}>{moment(date).format('MMMM Do YYYY, h:mm:ss a')}</span>
         </div>
 
-    </Box>}
+    </Box>
+    )}
     <Box 
         style={{width: '40%', margin: 'auto'}}
     >
@@ -163,20 +171,37 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
 export default function Dashboard(props) {
   const {id} = useParams()
   const [value, setValue] = useState(0);
-  const [listOfTrades, setListOfTrades] = useState([])
+  // const [listOfTrades, setListOfTrades] = useState([])
   const [workflowStatus, setWorkflowStatus] = useState({
     tradeMatchingService: null,
     tradeClearingService: null,
     tradeSettlementService: null
   })
+  const listOfTrades = ["UU2TFZSG4HB0D80", "UD2TFZSG4HB0D81", "UD2TFZSG4HB0D82" ]
 
+  const tradeValue ={
+    tradeWorkflow: [
+        {
+            tradeId: "UU2TFZSG4HB0D80", buyer: 'CLIENT01', seller: 'DEALER01'
+        },
+         {
+            tradeId: "UD2TFZSG4HB0D81", buyer: 'CLIENT01', seller: 'CCP01'
+        },
+        {
+            tradeId: "UD2TFZSG4HB0D82", buyer: 'DEALER01', seller: 'CCP01'
+        }
+    ]
+}
 
   useEffect(() => {
-    const tradeIds = {'tradeId': JSON.parse(localStorage.getItem('tradeId'))}
-    setListOfTrades(Object.values(tradeIds))
+    // const tradeIds = {'tradeId': JSON.parse(localStorage.getItem('tradeId'))}
+    // const updateTradeIds = {...tradeIds, ...}
+    // console.log({ tradeIds})
+    // setListOfTrades(Object.values(tradeIds))
   }, [])
 
-  const getData = async (listOfTrades) => {
+  const getData = async (listOfTrades, fmi, newVal) => {
+    console.log({ listOfTrades})
     const headers = {
         "Content-Type": "application/json",
         'x-api-key': process.env.REACT_APP_X_API_KEY,
@@ -184,18 +209,33 @@ export default function Dashboard(props) {
         'x-api-request-id': uuidv4(),
         'x-financial-member-id': id.toUpperCase()
       }
-      const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${listOfTrades[value]}&fmi=TRADE_MATCHING_SERVICE`)
+      const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${!newVal ? listOfTrades[value] : newVal}&fmi=${fmi}`)
       setWorkflowStatus(tradeData)
   }
 
   useEffect(() => {
-    listOfTrades.length > 0 && getData(listOfTrades)
-  }, [listOfTrades])
+    value === 0 && getData(listOfTrades, 'TRADE_MATCHING_SERVICE')
+  }, [])
 
+  const result = tradeValue.tradeWorkflow.filter((tradeList) =>{ return (tradeList.buyer === id.toUpperCase() || tradeList.seller === id.toUpperCase())})
+  const getFmi = (trade) => {
+    if (trade.seller === 'CCP01' || trade.buyer === 'CCP01') {
+      return 'TRADE_CLEARING_SERVICE'
+    } else {
+      return 'TRADE_MATCHING_SERVICE'
+    }
+    console.log({ trade })
+  }
+
+  console.log(getFmi(result))
   const handleChange = (event, newValue) => {
+    console.log(listOfTrades[newValue], {value})
     setValue(newValue);
+
+    getData(result, getFmi(result[newValue]), result[newValue].tradeId)
   };
 
+console.log({ result })
   return (
     <div
         style={{minHeight: '90vh'}}
@@ -205,7 +245,6 @@ export default function Dashboard(props) {
         >
             <div style={{borderRight: '1px solid #0474ac'}}>
                 <h4 style={{ margin: '1rem 0'}}>List of Trades</h4>
-
                 <Tabs
                     orientation="vertical"
                     value={value}
@@ -215,13 +254,13 @@ export default function Dashboard(props) {
                     textColor="primary"
                     style={{backgroundColor: '#0474ac28'}}
                 >
-                {listOfTrades?.map((trade, i)=> <Tab label={trade} {...a11yProps(i)}/> )}
+                {result?.map((trade, i)=> <Tab label={trade.tradeId} {...a11yProps(i)}/> )}
                 </Tabs>
             </div>
             
-              {listOfTrades?.map((trade, i)=> <TabPanel value={value} index={i}>
-            {workflowStatus.tradeMatchingService ? <TradeDetails workflowStatus={workflowStatus} tradeId={trade} id={id}/> : <h4>You have no trades at the moment</h4>}
-        </TabPanel>)}
+              {result.map((trade, i)=> <TabPanel value={value} index={i}>
+            <TradeDetails workflowStatus={workflowStatus} tradeId={trade.tradeId} id={id} i={i}/>
+            </TabPanel>)}
         </Box>
     </div>
   );

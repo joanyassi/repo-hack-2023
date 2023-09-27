@@ -39,7 +39,7 @@ export const getStatus = val => {
             return 'SUCCESS'
         case 'TRADE_MATCH_FAILURE':
             return 'FAILED'
-            case 'TRADE_MATCH_PENDING':
+        case 'TRADE_MATCH_PENDING':
             return 'PENDING'
         default:
     }
@@ -51,6 +51,8 @@ export const getTradeStatus = val => {
             return 'ACCEPTED'
         case 'TRADE_REJECTED':
             return 'REJECTED'
+        case 'TRADE_CONTRACT_FORMED':
+            return 'FORMED'
         default:
     }
 }
