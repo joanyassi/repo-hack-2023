@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -113,7 +113,9 @@ const TradeIdForm = ({handleSelect, fmi}) => {
     )
 }
 
-const TradeDetails = ({workflowEvent, handleSetValue}) => {
+const TradeDetails = ({workflowEvent, tradeId}) => {
+  const navigate = useNavigate()
+  console.log({ tradeId, workflowEvent })
 const date = new Date(workflowEvent.eventTimeStamp)
     return (
         <Box>
@@ -143,8 +145,8 @@ const date = new Date(workflowEvent.eventTimeStamp)
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={(e) => handleSetValue(e, 2)}>Clear</Button>
-        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={(e) => handleSetValue(e, 3)}>Settle</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => navigate(`/clearTrades/${tradeId}`)}>Clear</Button>
+        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => navigate(`/settleTrades/${tradeId}`)} >Settle</Button>
     </Box>
 </Box>
     )
@@ -260,14 +262,14 @@ export default function Dashboard(props) {
             </div>
 
         <TabPanel value={value} index={0}>
-            <TradeDetails workflowEvent={workflowEvent} handleSetValue={props.handleSetValue}/>
+            <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[0]}/>
         </TabPanel>
         <TabPanel value={value} index={1}>
-        <TradeDetails workflowEvent={workflowEventFailed}/>
+        <TradeDetails workflowEvent={workflowEventFailed} tradeId={listOfTrades[1]}/>
 
         </TabPanel>
         <TabPanel value={value} index={2}>
-        <TradeDetails workflowEvent={workflowEvent}/>
+        <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[2]}/>
         </TabPanel>
         </Box>
     </div>
