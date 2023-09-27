@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -61,7 +61,7 @@ function a11yProps(index) {
 }
 
 
-const fmisArr = ['TRADE_MATCHING_SERVICE', 'TRADE_CLEARING_SERVICE', 'TRADE_SETTLEMENT_SERVICE']
+const fmisArr = [{TRADE_MATCHING_SERVICE: "TRADE MATCHING SERVICE" }, {TRADE_CLEARING_SERVICE: 'TRADE CLEARING SERVICE'}, {TRADE_SETTLEMENT_SERVICE: 'TRADE SETTLEMENT SERVICE'}]
 
 const TradeIdForm = ({handleSelect, fmi}) => {
     // const handleChange = (e) => {
@@ -71,7 +71,7 @@ const TradeIdForm = ({handleSelect, fmi}) => {
     return (
         <Formik
         enableReinitialize="true"
-       initialValues={{fmi: 'TRADE_MATCHING_SERVICE'}}
+       initialValues={{fmi: 'TRADE MATCHING SERVICE'}}
        validate={values => {
        }}
     //    onSubmit={(values, setSubmitting) => handleSubmit(values, setSubmitting)}
@@ -79,11 +79,11 @@ const TradeIdForm = ({handleSelect, fmi}) => {
        {(props) => {
         return (
             <Form
-        style={{    display: 'flex',
-        margin: 'auto',
-        width: '40%',
-        justifyContent: 'space-around', alignItems: 'end'}}
-     >
+                style={{    display: 'flex',
+                margin: 'auto',
+                width: '40%',
+                justifyContent: 'space-around', alignItems: 'end', marginBottom: '2rem'}}
+            >
           <div
             style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}
           >
@@ -94,10 +94,10 @@ const TradeIdForm = ({handleSelect, fmi}) => {
               name="fmi"
               value={fmi}
             //   onChange={handleChange}
-              style={{textAlign: 'center', padding: '.3rem 0'}}
+              style={{textAlign: 'center', padding: '.3rem 0', borderRadius: '5px'}}
               onChange={(e) => handleSelect(e.target.value)}
               >
-                {fmisArr.map(fmi =><option value={fmi}>{fmi}</option>)}
+                {fmisArr.map(fmi =><option value={Object.keys(fmi)[0]}>{Object.values(fmi)[0]}</option>)}
               </Field>
           </div>
      {/* <Button style={{background: 'red', height: '2rem'}}
@@ -113,13 +113,15 @@ const TradeIdForm = ({handleSelect, fmi}) => {
     )
 }
 
-const TradeDetails = ({workflowEvent}) => {
+const TradeDetails = ({workflowEvent, tradeId}) => {
+  const navigate = useNavigate()
+  console.log({ tradeId, workflowEvent })
 const date = new Date(workflowEvent.eventTimeStamp)
     return (
         <Box>
-    <h4>Workflow Event Details</h4>
+    <h4 style={{marginBottom: '2rem'}}>Workflow Event Details</h4>
     <Box
-        style={{display: 'flex', justifyContent: 'space-around'}}
+        style={{display: 'flex', justifyContent: 'space-around', paddingBottom: '2rem'}}
     >
         <div style={{display: 'inline-block'}}>
             <span style={workflowEventLabelStyled}>Event Sequence</span>
@@ -142,23 +144,32 @@ const date = new Date(workflowEvent.eventTimeStamp)
     <Box 
         style={{width: '40%', margin: 'auto'}}
     >
-        <h4>Trades Actions</h4>
-        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}}>Settle</Button>
-        <Button style={{background: 'blue', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}}>Clear</Button>
+        <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => navigate(`/clearTrades/${tradeId}`)}>Clear</Button>
+        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => navigate(`/settleTrades/${tradeId}`)} >Settle</Button>
     </Box>
 </Box>
     )
 }
 
-export default function Dashboard() {
+export default function Dashboard(props) {
   const [value, setValue] = useState(0);
   const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
   // const [listOfTrades, setListOfTrades] = useState([])
-
+  
+  const getTradeList = async () => {
+    const response = await fetchNoHeaders('/repoTrades/tradesList/')
+    console.log({ response })
+  }
 
   useEffect(() => {
-    const response = fetchNoHeaders('/repoTrades/tradesList/')
-    console.log({ response })
+    const term = setInterval(() => {
+      // getTradeList()
+    }, 5000)
+
+    console.log({ term })
+
+    return () => clearInterval(term)
   }, [])
 
   const getData = () => {
@@ -175,7 +186,7 @@ export default function Dashboard() {
       console.log({ headers })
 
       const response = fetchData( headers, '/repoTrades/tradeWorkflowStatus/')
-    //   console.log({ response })
+      console.log({ response })
   }
 
   useEffect(() => {
@@ -232,17 +243,17 @@ export default function Dashboard() {
         <TradeIdForm handleSelect={setFmi} fmi={fmi}/>
 
         <Box
-        sx={{display: 'flex', height: "auto", border: '1px solid #0474ac' }}
+        sx={{display: 'flex', height: "auto", border: '1px solid #0474ac', borderRadius: '10px' }}
         >
             <div style={{borderRight: '1px solid #0474ac'}}>
-                <h4>List of Trades</h4>
+                <h4 style={{ margin: '1rem 0'}}>List of Trades</h4>
 
                 <Tabs
                     orientation="vertical"
                     value={value}
                     onChange={handleChange}
                     aria-label="Vertical tabs example"
-                    sx={{ borderRight: 1, borderColor: 'divider', minWidth: '200px', }}
+                    sx={{ borderRight: 1, borderColor: 'divider', minWidth: '200px', minHeight: '80%' }}
                     textColor="primary"
                     style={{backgroundColor: '#0474ac28'}}
                 >
@@ -251,14 +262,14 @@ export default function Dashboard() {
             </div>
 
         <TabPanel value={value} index={0}>
-            <TradeDetails workflowEvent={workflowEvent}/>
+            <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[0]}/>
         </TabPanel>
         <TabPanel value={value} index={1}>
-        <TradeDetails workflowEvent={workflowEventFailed}/>
+        <TradeDetails workflowEvent={workflowEventFailed} tradeId={listOfTrades[1]}/>
 
         </TabPanel>
         <TabPanel value={value} index={2}>
-        <TradeDetails workflowEvent={workflowEvent}/>
+        <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[2]}/>
         </TabPanel>
         </Box>
     </div>

@@ -61,7 +61,7 @@ const TradeExecution = () => {
     setSelectedUser(Object.values(Users).filter(user => user.username.toLowerCase() === e.target.value.toLowerCase())[0])
   }
 
-  const handleSubmit = ({
+  const handleSubmit = async ({
     buyer_name,
     buyer_lei,
     buyer_account,
@@ -79,9 +79,13 @@ const TradeExecution = () => {
     collateral_haircut,
     trade_ccy,
     cash_amount,
-    termination_cash_amount
+    termination_cash_amount,
+    trade_id
    }, { setSubmitting, resetForm }) => {
     const fomrValues = {
+      trade_id: {
+        trade_id
+      },
       buyer: {
         buyer_name,
         buyer_lei,
@@ -108,19 +112,19 @@ const TradeExecution = () => {
       }
     }
      const headers = {
-      "Accept": "application/json",
+      "Content-type": "application/json",
       'x-api-key': process.env.REACT_APP_X_API_KEY,
       'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
       'x-api-request-id': uuidv4(),
       'x-financial-member-id': id.toUpperCase(),
       'x-simulation-date': trade_date
     }
-     const response = postData( headers, '/repoTrades/execution', fomrValues)
+     const response = await postData( headers, '/repoTrades/execution', fomrValues)
      console.log({ response })
 
        setSubmitting(false);
       // resetForm(getInitialValues(userDetails))
-      window.location.reload();
+      // window.location.reload();
       console.log(`/dashboard/${id}`)
       
   }
@@ -149,7 +153,7 @@ const TradeExecution = () => {
             <Box
               sx={{ width: '40%'}}
             >
-              <Button style={{margin: '1rem 0', background: 'red'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('seller'))} variant="contained">Sell</Button>
+              <Button style={{margin: '1rem 0', background: 'red'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('seller'))} variant="contained">{(userRole==='seller') ? 'I am the seller' : 'Sell'}</Button>
               <h4>Seller Details</h4>
               <div
                 style={{...divStyled, width: '100%'}}
@@ -159,7 +163,7 @@ const TradeExecution = () => {
                   as='select'
                   id="seller_name" 
                   name="seller_name"
-                  style={{...fieldStyle, width: '96%'}}
+                  style={{...fieldStyle, width: '90%'}}
                   onChange={handleSelect}
                   defaultValue=''
                   >
@@ -186,7 +190,7 @@ const TradeExecution = () => {
               sx={{ width: '40%'}}
             
             >
-         <Button style={{margin: '1rem 0', background: 'green'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('buyer'))} variant="contained">Buy</Button>
+         <Button style={{margin: '1rem 0', background: 'green'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('buyer'))} variant="contained">{(userRole==='buyer') ? 'I am the buyer' : 'Buy'}</Button>
 
             <h4>Buyer Details</h4>
               <div
@@ -197,7 +201,7 @@ const TradeExecution = () => {
                   as='select'
                   id="buyer_name"
                   name="buyer_name"
-                  style={{...fieldStyle, width: '96%'}}
+                  style={{...fieldStyle, width: '90%'}}
                   onChange={handleSelect}
                   >
                     {userRole === 'buyer' ? <option value={userDetails.username}>{userDetails.username}</option> : selectableUsers.map(user =><option value={user.username}>{user.username}</option>)}
@@ -255,6 +259,13 @@ const TradeExecution = () => {
                style={{ display: 'flex', flexWrap: 'wrap', columnGap: '2.6rem', rowGap: '2rem', paddingTop: '2rem'}}
               >
               <div
+                style={divStyled}
+              >
+                <label htmlFor="trade_id" style={labelStyeled}>Trade Id</label>
+                <Field id="trade_id" name="trade_id" placeholder="UC1GQN1435RKX0" style={{...fieldStyle, width: '90%'}}/>
+                <ErrorMessage name="trade_id" component="div" />
+              </div>
+              <div
                 style={{...divStyled}}
               >
                 <label htmlFor="repo_rate" style={labelStyeled}>Repo Rate</label>
@@ -307,14 +318,14 @@ const TradeExecution = () => {
                 style={divStyled}
               >
                 <label htmlFor="cash_amount" style={labelStyeled}>Cash Amount</label>
-                <Field id="cash_amount" name="cash_amount" placeholder="234" style={{...fieldStyle, width: '90%'}} type='number'/>
+                <Field id="cash_amount" name="cash_amount" placeholder="234" style={{...fieldStyle, width: '90%'}}/>
                 <ErrorMessage name="cash_amount" component="div" />
               </div>
               <div
                 style={divStyled}
               >
                 <label htmlFor="termination_cash_amount" style={labelStyeled}>Termination Cash Amount</label>
-                <Field id="termination_cash_amount" name="termination_cash_amount" placeholder="6444187.21" style={{...fieldStyle, width: '90%'}} type='number'/>
+                <Field id="termination_cash_amount" name="termination_cash_amount" placeholder="6444187.21" style={{...fieldStyle, width: '90%'}}/>
                 <ErrorMessage name="termination_cash_amount" component="div" />
               </div>
               </div>

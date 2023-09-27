@@ -3,7 +3,7 @@ import { useLocation,useParams } from 'react-router-dom'
 import axios from 'axios'
 
 const Dashboard = () => {
-    const {id} = useParams();
+    // const {id} = useParams();
 
     const getData = async () => {
         console.log('get Data')

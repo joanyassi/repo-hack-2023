@@ -5,7 +5,7 @@ import {
 import Home from '../pages/Home'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
-import HelloWord from '../pages/HelloWord'
+import ClearTrades from '../pages/ClearTrades'
 import Layout from "../components/header/header";
 
 const Router = createBrowserRouter([
@@ -21,8 +21,8 @@ const Router = createBrowserRouter([
 		element: <Dashboard />,
 	},
 	{
-		path: "/hello-world",
-		element: <HelloWord />,
+		path: "/clearTrades/:tradeId",
+		element: <ClearTrades />,
 	}
 		]
 	}

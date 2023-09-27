@@ -52,7 +52,7 @@ export default function VerticalTabs() {
 
   return (
     <Box
-      sx={{display: 'flex', height: "auto", border: '1px solid #0474ac', background: '#0474ac13' }}
+      sx={{display: 'flex', height: "auto", background: '#0474ac13' }}
     >
       <Tabs
         orientation="vertical"
@@ -66,31 +66,31 @@ export default function VerticalTabs() {
       >
         <Tab label="Dashboard" {...a11yProps(0)}/>
         <Tab label="Trade Execution" {...a11yProps(1)} />
-        <Tab label="Trade Clearing" {...a11yProps(2)} />
-        <Tab label="Trade Settlement" {...a11yProps(3)} />
-        <Tab label="Business Event Query" {...a11yProps(4)} />
-        <Tab label="Workflow Status" {...a11yProps(5)} />
-        <Tab label="Testing Connection" {...a11yProps(6)} />
+        {/* <Tab label="Trade Clearing" {...a11yProps(2)} />
+        <Tab label="Trade Settlement" {...a11yProps(3)} /> */}
+        <Tab label="Business Event Query" {...a11yProps(2)} />
+        <Tab label="Workflow Status" {...a11yProps(3)} />
+        <Tab label="Testing Connection" {...a11yProps(4)} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <Dashboard />
+        <Dashboard handleSetValue={handleChange}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <TradeExecution />
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      {/* <TabPanel value={value} index={2}>
         Trade Clearing
       </TabPanel>
       <TabPanel value={value} index={3}>
         Trade Settlement
-      </TabPanel>
-      <TabPanel value={value} index={4}>
+      </TabPanel> */}
+      <TabPanel value={value} index={2}>
         Business Event Query
       </TabPanel>
-      <TabPanel value={value} index={5}>
+      <TabPanel value={value} index={3}>
         Workflow Status
       </TabPanel>
-      <TabPanel value={value} index={6}>
+      <TabPanel value={value} index={4}>
         <StartHere />
       </TabPanel>
     </Box>
