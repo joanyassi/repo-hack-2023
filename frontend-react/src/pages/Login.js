@@ -13,6 +13,7 @@ import {
 }
 from 'mdb-react-ui-kit';
 import TextField from '@mui/material/TextField';
+import Logo from '../assets/CAPMF.png'
 
 import Users from '../data/user.json'
 
@@ -55,7 +56,10 @@ function App() {
           <MDBCard className='my-5 cascading-right' style={{background: 'hsla(0, 0%, 100%, 0.55)',  backdropFilter: 'blur(30px)'}}>
             <MDBCardBody className='p-5 shadow-5 text-center'>
 
-              <h2 className="fw-bold mb-5">Sign in now</h2>
+              {/* <h2 className="fw-bold mb-5">Sign in now</h2> */}
+              <div style={{height: '3rem', width: "13rem", alignSelf: 'center', margin: "2rem auto"}}>
+                  <img src={Logo} alt="" style={{height: '100%'}}/>
+                </div>
 
               <MDBInput wrapperClass='mb-4' name="username" onChange={e => handleChange(e)} label='Username' id='form3' type='text' value={loginData.username}/>
               <MDBInput wrapperClass='mb-4' name="password" onChange={e => handleChange(e)} label='Password' id='form4' type='password' value={loginData.password}/>
@@ -81,6 +85,7 @@ function App() {
                 <MDBBtn tag='a' color='none' className='mx-3' style={{ color: '#1266f1' }}>
                   <MDBIcon fab icon='github' size="sm"/>
                 </MDBBtn>
+                
 
               </div>
 

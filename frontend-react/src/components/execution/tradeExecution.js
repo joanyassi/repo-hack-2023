@@ -61,7 +61,7 @@ const TradeExecution = () => {
     setSelectedUser(Object.values(Users).filter(user => user.username.toLowerCase() === e.target.value.toLowerCase())[0])
   }
 
-  const handleSubmit = ({
+  const handleSubmit = async ({
     buyer_name,
     buyer_lei,
     buyer_account,
@@ -115,12 +115,12 @@ const TradeExecution = () => {
       'x-financial-member-id': id.toUpperCase(),
       'x-simulation-date': trade_date
     }
-     const response = postData( headers, '/repoTrades/execution', fomrValues)
+     const response = await postData( headers, '/repoTrades/execution', fomrValues)
      console.log({ response })
 
        setSubmitting(false);
       // resetForm(getInitialValues(userDetails))
-      window.location.reload();
+      // window.location.reload();
       console.log(`/dashboard/${id}`)
       
   }
@@ -149,7 +149,7 @@ const TradeExecution = () => {
             <Box
               sx={{ width: '40%'}}
             >
-              <Button style={{margin: '1rem 0', background: 'red'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('seller'))} variant="contained">Sell</Button>
+              <Button style={{margin: '1rem 0', background: 'red'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('seller'))} variant="contained">{(userRole==='seller') ? 'I am the seller' : 'Sell'}</Button>
               <h4>Seller Details</h4>
               <div
                 style={{...divStyled, width: '100%'}}
@@ -159,7 +159,7 @@ const TradeExecution = () => {
                   as='select'
                   id="seller_name" 
                   name="seller_name"
-                  style={{...fieldStyle, width: '96%'}}
+                  style={{...fieldStyle, width: '90%'}}
                   onChange={handleSelect}
                   defaultValue=''
                   >
@@ -186,7 +186,7 @@ const TradeExecution = () => {
               sx={{ width: '40%'}}
             
             >
-         <Button style={{margin: '1rem 0', background: 'green'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('buyer'))} variant="contained">Buy</Button>
+         <Button style={{margin: '1rem 0', background: 'green'}} disabled={props.isSubmitting} onClick={(()=> setUserRole('buyer'))} variant="contained">{(userRole==='buyer') ? 'I am the buyer' : 'Buy'}</Button>
 
             <h4>Buyer Details</h4>
               <div
@@ -197,7 +197,7 @@ const TradeExecution = () => {
                   as='select'
                   id="buyer_name"
                   name="buyer_name"
-                  style={{...fieldStyle, width: '96%'}}
+                  style={{...fieldStyle, width: '90%'}}
                   onChange={handleSelect}
                   >
                     {userRole === 'buyer' ? <option value={userDetails.username}>{userDetails.username}</option> : selectableUsers.map(user =><option value={user.username}>{user.username}</option>)}
