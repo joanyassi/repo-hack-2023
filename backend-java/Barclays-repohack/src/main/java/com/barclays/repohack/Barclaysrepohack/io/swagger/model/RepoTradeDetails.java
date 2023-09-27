@@ -17,12 +17,12 @@ import javax.validation.constraints.*;
 @Validated
 //@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-09-15T12:53:09.143146271Z[GMT]")
 
-
+@JsonIgnoreProperties
 public class RepoTradeDetails   {
   @JsonProperty("trade_date")
   private String tradeDate = null;
 
-  @JsonIgnoreProperties("effective_date")
+  @JsonProperty("effective_date")
   private String effectiveDate = null;
 
   @JsonProperty("maturity_date")

@@ -1,6 +1,8 @@
 package com.barclays.repohack.Barclaysrepohack.io.swagger.model;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.model.RepoBuyer;
@@ -17,7 +19,7 @@ import javax.validation.constraints.*;
 @Validated
 //@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-09-15T12:53:09.143146271Z[GMT]")
 
-
+@JsonIgnoreProperties
 public class RepoTradeExecutionSubmissionRequest   {
   @JsonProperty("trade_id")
   private String tradeId = null;
