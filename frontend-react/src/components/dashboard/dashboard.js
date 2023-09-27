@@ -9,7 +9,8 @@ import { Formik, Form, Field } from 'formik';
 import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment'
-import { fetchData, getStatus, getTradeStatus, fetchNoHeaders } from '../../utils/utils';
+import { fetchData, getStatus, getTradeStatus, fetchNoHeaders, postData } from '../../utils/utils';
+import axios from 'axios';
 
 const workflowEventLabelStyled = {
     fontStyle: 'Italic',
@@ -22,9 +23,9 @@ const workflowEventDisplay = {
     backgroundColor: 'white'
 }
 
-const listOfTrades = [
-    'UC2Q0EKXFH6260', 'UC2Q0EKXFH6264', 'UC2Q0EKXFH6232'
-]
+// const listOfTrades = [
+//     'UC2Q0EKXFH6260', 'UC2Q0EKXFH6264', 'UC2Q0EKXFH6232'
+// ]
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -114,6 +115,21 @@ const TradeIdForm = ({handleSelect, fmi}) => {
 }
 
 const TradeDetails = ({workflowEvent, tradeId}) => {
+  const {id} = useParams
+  
+  const clearTrade = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      'x-api-key': process.env.REACT_APP_X_API_KEY,
+      'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
+      'x-api-request-id': uuidv4(),
+      'x-financial-member-id': id.toUpperCase(),
+      'x-simulation-date': date
+    }
+     const response = await postData( headers, `/repoTrades/execution/${tradeId}`)
+     console.log({ response })
+  }
+
   const navigate = useNavigate()
   console.log({ tradeId, workflowEvent })
 const date = new Date(workflowEvent.eventTimeStamp)
@@ -145,7 +161,7 @@ const date = new Date(workflowEvent.eventTimeStamp)
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => navigate(`/clearTrades/${tradeId}`)}>Clear</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade()}>Clear</Button>
         <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => navigate(`/settleTrades/${tradeId}`)} >Settle</Button>
     </Box>
 </Box>
@@ -155,7 +171,7 @@ const date = new Date(workflowEvent.eventTimeStamp)
 export default function Dashboard(props) {
   const [value, setValue] = useState(0);
   const [fmi, setFmi] = useState('TRADE_MATCHING_SERVICE')
-  // const [listOfTrades, setListOfTrades] = useState([])
+  const [listOfTrades, setListOfTrades] = useState([])
   
   const getTradeList = async () => {
     const response = await fetchNoHeaders('/repoTrades/tradesList/')
@@ -163,13 +179,16 @@ export default function Dashboard(props) {
   }
 
   useEffect(() => {
-    const term = setInterval(() => {
-      // getTradeList()
-    }, 5000)
+    const tradeIds = {'tradeId': JSON.parse(localStorage.getItem('tradeId'))}
+    setListOfTrades(Object.values(tradeIds))
+    console.log({tradeIds, listOfTrades})
+    // const term = setInterval(() => {
+    //   // getTradeList()
+    // }, 5000)
 
-    console.log({ term })
+    // console.log({ term })
 
-    return () => clearInterval(term)
+    // return () => clearInterval(term)
   }, [])
 
   const getData = () => {
@@ -260,17 +279,20 @@ export default function Dashboard(props) {
                 {listOfTrades.map((trade, i)=> <Tab label={trade} {...a11yProps(i)}/> )}
                 </Tabs>
             </div>
-
-        <TabPanel value={value} index={0}>
-            <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[0]}/>
-        </TabPanel>
+            
+              {listOfTrades.map((trade, i)=> <TabPanel value={value} index={i}>
+            <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[i]}/>
+        </TabPanel>)}
+            
+{/* 
+        
         <TabPanel value={value} index={1}>
         <TradeDetails workflowEvent={workflowEventFailed} tradeId={listOfTrades[1]}/>
 
         </TabPanel>
         <TabPanel value={value} index={2}>
         <TradeDetails workflowEvent={workflowEvent} tradeId={listOfTrades[2]}/>
-        </TabPanel>
+        </TabPanel> */}
         </Box>
     </div>
   );
