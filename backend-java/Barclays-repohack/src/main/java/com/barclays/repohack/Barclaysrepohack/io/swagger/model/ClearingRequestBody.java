@@ -3,7 +3,7 @@ package com.barclays.repohack.Barclaysrepohack.io.swagger.model;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.barclays.repohack.Barclaysrepohack.io.swagger.model.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
@@ -18,9 +18,9 @@ import javax.validation.constraints.*;
 
 public class ClearingRequestBody   {
   @JsonProperty("businessEventData")
-  private JsonNode businessEventData = null;
+  private com.fasterxml.jackson.databind.JsonNode businessEventData = null;
 
-  public ClearingRequestBody businessEventData(JsonNode businessEventData) {
+  public ClearingRequestBody businessEventData(com.fasterxml.jackson.databind.JsonNode businessEventData) {
     this.businessEventData = businessEventData;
     return this;
   }
@@ -32,7 +32,7 @@ public class ClearingRequestBody   {
   @Schema(description = "")
   
     @Valid
-    public JsonNode getBusinessEventData() {
+    public com.fasterxml.jackson.databind.JsonNode getBusinessEventData() {
     return businessEventData;
   }
 

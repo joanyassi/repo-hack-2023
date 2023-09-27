@@ -28,7 +28,7 @@ public class RepoTradeExecutionSubmissionRequest   {
   @JsonProperty("seller")
   private RepoSeller seller = null;
 
-  @JsonProperty("tradeDetails")
+  @JsonProperty("trade_details")
   private RepoTradeDetails tradeDetails = null;
 
   public RepoTradeExecutionSubmissionRequest tradeId(String tradeId) {

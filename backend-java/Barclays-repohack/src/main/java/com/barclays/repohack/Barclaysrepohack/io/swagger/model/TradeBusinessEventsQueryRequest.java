@@ -1,5 +1,7 @@
 package com.barclays.repohack.Barclaysrepohack.io.swagger.model;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -24,10 +26,10 @@ public class TradeBusinessEventsQueryRequest   {
   private String fmi = null;
 
   @JsonProperty("fromDate")
-  private DateTime fromDate = null;
+  private LocalDateTime fromDate = null;
 
   @JsonProperty("toDate")
-  private DateTime toDate = null;
+  private LocalDateTime toDate = null;
 
   public TradeBusinessEventsQueryRequest tradeId(String tradeId) {
     this.tradeId = tradeId;
@@ -67,7 +69,7 @@ public class TradeBusinessEventsQueryRequest   {
     this.fmi = fmi;
   }
 
-  public TradeBusinessEventsQueryRequest fromDate(DateTime fromDate) {
+  public TradeBusinessEventsQueryRequest fromDate(LocalDateTime fromDate) {
     this.fromDate = fromDate;
     return this;
   }
@@ -79,15 +81,15 @@ public class TradeBusinessEventsQueryRequest   {
   @Schema(example = "2023-08-25T10:27:08.943Z", description = "")
   
     @Valid
-    public DateTime getFromDate() {
+    public LocalDateTime getFromDate() {
     return fromDate;
   }
 
-  public void setFromDate(DateTime fromDate) {
+  public void setFromDate(LocalDateTime fromDate) {
     this.fromDate = fromDate;
   }
 
-  public TradeBusinessEventsQueryRequest toDate(DateTime toDate) {
+  public TradeBusinessEventsQueryRequest toDate(LocalDateTime toDate) {
     this.toDate = toDate;
     return this;
   }
@@ -99,11 +101,11 @@ public class TradeBusinessEventsQueryRequest   {
   @Schema(example = "2023-08-25T10:27:08.943Z", description = "")
   
     @Valid
-    public DateTime getToDate() {
+    public LocalDateTime getToDate() {
     return toDate;
   }
 
-  public void setToDate(DateTime toDate) {
+  public void setToDate(LocalDateTime toDate) {
     this.toDate = toDate;
   }
 
