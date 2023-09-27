@@ -164,7 +164,7 @@ export default function Dashboard(props) {
 
   useEffect(() => {
     const term = setInterval(() => {
-      getTradeList()
+      // getTradeList()
     }, 5000)
 
     console.log({ term })

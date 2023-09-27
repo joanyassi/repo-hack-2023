@@ -21,7 +21,7 @@ const Router = createBrowserRouter([
 		element: <Dashboard />,
 	},
 	{
-		path: "/clearTrades/:id",
+		path: "/clearTrades/:tradeId",
 		element: <ClearTrades />,
 	}
 		]
