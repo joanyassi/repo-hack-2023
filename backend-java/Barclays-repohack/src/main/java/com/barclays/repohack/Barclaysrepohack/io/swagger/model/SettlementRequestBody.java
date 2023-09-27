@@ -3,7 +3,7 @@ package com.barclays.repohack.Barclaysrepohack.io.swagger.model;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.barclays.repohack.Barclaysrepohack.io.swagger.model.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
@@ -16,9 +16,9 @@ import javax.validation.constraints.*;
 //@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-09-15T12:53:09.143146271Z[GMT]")
 public class SettlementRequestBody   {
   @JsonProperty("businessEventData")
-  private JsonNode businessEventData = null;
+  private com.fasterxml.jackson.databind.JsonNode businessEventData = null;
 
-  public SettlementRequestBody businessEventData(JsonNode businessEventData) {
+  public SettlementRequestBody businessEventData(com.fasterxml.jackson.databind.JsonNode businessEventData) {
     this.businessEventData = businessEventData;
     return this;
   }
@@ -30,7 +30,7 @@ public class SettlementRequestBody   {
   @Schema(description = "")
   
     @Valid
-    public JsonNode getBusinessEventData() {
+    public com.fasterxml.jackson.databind.JsonNode getBusinessEventData() {
     return businessEventData;
   }
 

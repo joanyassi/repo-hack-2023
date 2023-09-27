@@ -71,7 +71,7 @@ public class RepoTradesService {
         return response;
     }
 
-    public ResponseEntity<RepoTradeSubmissionResponse>  postSettlementRequest(HttpEntity<SettlementRequestBody> requestEntity){
+    public ResponseEntity<RepoTradeSubmissionResponse>  postSettlementRequest(HttpEntity<SettlementRequestBody> requestEntity, String tradeId){
         ResponseEntity<RepoTradeSubmissionResponse> response =  restTemplate.exchange(
                 "https://repohack2023.nayaone.com/repoTrades/settlement", HttpMethod.POST, requestEntity, RepoTradeSubmissionResponse.class);
         //ResponseEntity<RepoTradeSubmissionResponse> response = tradeStatus("UC2Q0EKXFH6260", "TRADE_SETTLED");
@@ -83,7 +83,7 @@ public class RepoTradesService {
         return response;
     }
 
-    public ResponseEntity<RepoTradeSubmissionResponse>  tradeClearing(HttpEntity<ClearingRequestBody> requestEntity, String tradeId){
+    public ResponseEntity<String>  tradeClearing(HttpEntity<ClearingRequestBody> requestEntity, String tradeId){
 
         //ResponseEntity<RepoTradeSubmissionResponse> response = tradeStatus("UC2Q0EKXFH6260","TRADE_CLEARED");
         HttpHeaders httpHeaders = requestEntity.getHeaders();
@@ -91,7 +91,7 @@ public class RepoTradesService {
         tradeBusinessRequest.setTradeId(tradeId);
         tradeBusinessRequest.setFmi("TRADE_MATCHING_SERVICE");
         tradeBusinessRequest.fromDate("2023-09-27T07:27:08.943Z");
-        tradeBusinessRequest.toDate("2023-09-27T22:27:08.943Z");
+        tradeBusinessRequest.toDate("2023-09-28T22:27:08.943Z");
         ObjectMapper Obj = new ObjectMapper();
         String jsonStr = null;
         try {
@@ -136,7 +136,8 @@ public class RepoTradesService {
             assert repoTradeResponse != null;
             saveOrUpdateTradeCycle(repoTradeResponse);
         }
-        return response;
+        HttpEntity httpEntity = new HttpEntity<>(httpHeaders);
+        return getWorkflowEvents(httpEntity, Objects.requireNonNull(response.getBody()).getTradeId(), "TRADE_CLEARING_SERVICE");
     }
     public ResponseEntity<String> getBusinessEvents (HttpEntity<String> requestEntity) throws IOException {
 
@@ -227,8 +228,8 @@ public class RepoTradesService {
                 .body(response);
     }
 
-    public List<Trade> getTradesList(){
-        return tradeRepository.findAll();
+    public List<Trade> getTradesList(String loggedInUser){
+        return tradeRepository.getTradesforLoggedInUser(loggedInUser);
     }
 
     public static List<WorkflowEvent> getWorkflowEventDataList(TradeEvent te){
