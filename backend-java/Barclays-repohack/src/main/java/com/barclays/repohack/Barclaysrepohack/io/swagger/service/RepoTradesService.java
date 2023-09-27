@@ -6,28 +6,21 @@ import com.barclays.repohack.Barclaysrepohack.io.swagger.model.*;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.repo.TradeEventRepository;
 import com.barclays.repohack.Barclaysrepohack.io.swagger.repo.TradeRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import springfox.documentation.service.Header;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class RepoTradesService {
@@ -71,16 +64,59 @@ public class RepoTradesService {
         return response;
     }
 
-    public ResponseEntity<RepoTradeSubmissionResponse>  postSettlementRequest(HttpEntity<SettlementRequestBody> requestEntity, String tradeId){
+    public ResponseEntity<String>  postSettlementRequest(HttpEntity<SettlementRequestBody> requestEntity, String tradeId){
+        HttpHeaders httpHeaders = requestEntity.getHeaders();
+        TradeBusinessEventsQueryRequest tradeBusinessRequest = new TradeBusinessEventsQueryRequest();
+        tradeBusinessRequest.setTradeId(tradeId);
+        tradeBusinessRequest.setFmi("TRADE_CLEARING_SERVICE");
+        tradeBusinessRequest.fromDate("2023-09-27T07:27:08.943Z");
+        tradeBusinessRequest.toDate("2023-09-28T22:27:08.943Z");
+        ObjectMapper Obj = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = Obj.writeValueAsString(tradeBusinessRequest);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        HttpEntity<String> tradeBusinessEventRequest =
+                new HttpEntity<>(jsonStr, httpHeaders);
+        TradeBusinessEventsQueryResponse businessEvents = null;
+        List<BusinessEventData> businessEventData = null;
+        JsonNode data= null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String response  = getBusinessEvents(tradeBusinessEventRequest).getBody();
+            businessEvents = objectMapper.readValue(response, TradeBusinessEventsQueryResponse.class);
+
+            assert businessEvents != null;
+            businessEventData = businessEvents.getTradeClearingService();
+            data = businessEventData.get(0).getBusinessEvents().get(0).getBusinessEventData();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+         /* ResponseEntity<RepoTradeSubmissionResponse> response =  restTemplate.exchange(
+                "https://repohack2023.nayaone.com/repoTrades/clearing", HttpMethod.POST, requestEntity, RepoTradeSubmissionResponse.class);*/
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json;
+        try {
+            json = ow.writeValueAsString(data);
+            json = "{\n" +
+                    "  \"businessEventData\":" + json + "}";
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        HttpEntity<String> tradeClearingEventRequest =
+                new HttpEntity<>(json, httpHeaders);
         ResponseEntity<RepoTradeSubmissionResponse> response =  restTemplate.exchange(
-                "https://repohack2023.nayaone.com/repoTrades/settlement", HttpMethod.POST, requestEntity, RepoTradeSubmissionResponse.class);
-        //ResponseEntity<RepoTradeSubmissionResponse> response = tradeStatus("UC2Q0EKXFH6260", "TRADE_SETTLED");
+                "https://repohack2023.nayaone.com/repoTrades/settlement", HttpMethod.POST, tradeClearingEventRequest, RepoTradeSubmissionResponse.class);
         if(HttpStatus.valueOf(response.getStatusCodeValue()).is2xxSuccessful()) {
             RepoTradeSubmissionResponse repoTradeResponse = response.getBody();
             assert repoTradeResponse != null;
-            saveOrUpdateTradeCycle(response.getBody());
+            saveOrUpdateTradeCycle(repoTradeResponse);
         }
-        return response;
+        HttpEntity httpEntity = new HttpEntity<>(httpHeaders);
+        return getWorkflowEvents(httpEntity, Objects.requireNonNull(response.getBody()).getTradeId(), "TRADE_SETTLEMENT_SERVICE");
     }
 
     public ResponseEntity<String>  tradeClearing(HttpEntity<ClearingRequestBody> requestEntity, String tradeId){
