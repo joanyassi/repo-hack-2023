@@ -62,7 +62,8 @@ public class RepoTradesApiController implements RepoTradesApi {
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             HttpEntity httpEntity = new HttpEntity<>(headers);
-            return repoTradesService.getWorkflowEvents(httpEntity, tradeId, fmi);
+            ResponseEntity<String> responseEntity =  repoTradesService.getWorkflowEvents(httpEntity, tradeId, fmi);
+            return responseEntity;
 
     }
 
