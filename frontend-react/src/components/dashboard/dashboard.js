@@ -109,9 +109,9 @@ function a11yProps(index) {
 
 const TradeDetails = ({workflowStatus, tradeId, id}) => {
   const tradeDetails = () => {
-    if (workflowStatus.tradeMatchingService) {
+    if (workflowStatus?.tradeMatchingService) {
       return workflowStatus?.tradeMatchingService?.filter(trade => trade.tradeId === tradeId)[0]?.workflowEvents
-    } else if (workflowStatus.tradeClearingService) {
+    } else if (workflowStatus?.tradeClearingService) {
       return workflowStatus?.tradeClearingService?.filter(trade => trade.tradeId === tradeId)[0]?.workflowEvents
     }
   }
