@@ -215,7 +215,7 @@ const getData = async (listOfTrades, getFmi) => {
       'x-api-request-id': uuidv4(),
       'x-financial-member-id': id.toUpperCase()
     }
-    const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${listOfTrades[value].tradeId}&fmi=${getFmi(listOfTrades[value].tradeId)}`)
+    const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${listOfTrades.tradeId}&fmi=${getFmi(listOfTrades.tradeId)}`)
     setWorkflowStatus(tradeData)
 }
 
@@ -225,7 +225,7 @@ const getData = async (listOfTrades, getFmi) => {
       const tradesList = await fetchNoHeaders(`/repoTrades/tradesList/?loggedInUser=${id.toUpperCase()}`)
       setListOfTrades(tradesList)
       if (tradesList.length > 0) {
-        const response = await getData(tradesList, getFmi)
+        const response = await getData(tradesList[value], getFmi)
         console.log({ response})
       }
       return tradesList
@@ -245,10 +245,11 @@ const getData = async (listOfTrades, getFmi) => {
 
   // console.log(getFmi(result))
   const handleChange = (event, newValue) => {
-    console.log(listOfTrades[newValue], {value})
+    console.log(listOfTrades[newValue], {newValue})
     setValue(newValue);
+    const response = getData(listOfTrades[newValue], getFmi)
+    console.log({response, workflowStatus })
 
-    // getData(result, getFmi(result[newValue]), result[newValue].tradeId)
   };
 
 // console.log({ result })
