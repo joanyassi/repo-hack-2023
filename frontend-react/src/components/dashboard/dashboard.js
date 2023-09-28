@@ -63,8 +63,12 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
       return workflowStatus?.tradeClearingService?.filter(trade => trade.tradeId === tradeId)[0]?.workflowEvents
     }
   }
+  console.log({workflowStatus}, tradeDetails(), tradeId, id)
+
+  
   
   const clearTrade = async (date) => {
+    console.log({ date })
     const headers = {
       "Content-Type": "application/json",
       'x-api-key': process.env.REACT_APP_X_API_KEY,
@@ -77,6 +81,8 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
   }
 
   const settleTrade = async (date) => {
+    console.log({ date })
+
     const headers = {
       "Content-Type": "application/json",
       'x-api-key': process.env.REACT_APP_X_API_KEY,
@@ -88,7 +94,8 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
      const response = await postData( headers, `/repoTrades/settlement?tradeId=${tradeId}`)
   }
   const navigate = useNavigate()
-  const date = tradeDetails()?.length> 0 && new Date(tradeDetails()[0]?.eventTimeStamp)
+  const date = tradeDetails()?.length> 0 && new Date(tradeDetails()[0]?.eventTimeStamp).toLocaleDateString()
+  console.log({ date })
     return (
         <Box>
     <h4 style={{marginBottom: '2rem'}}>Workflow Event Details</h4>
@@ -119,8 +126,8 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade()}>Clear</Button>
-        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => settleTrade()} >Settle</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade(date)}>Clear</Button>
+        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => settleTrade(date)} >Settle</Button>
     </Box>
 </Box>
     )
