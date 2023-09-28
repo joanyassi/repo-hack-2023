@@ -168,82 +168,98 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
     )
 }
 
+const getFmi = (tradeId) => {
+  const lastDigit = tradeId.split('').pop()
+  switch (lastDigit) {
+    case '0':
+      return 'TRADE_MATCHING_SERVICE'
+    case '1':
+      return 'TRADE_CLEARING_SERVICE'
+    case '2':
+      return 'TRADE_SETTLEMENT_SERVICE'
+    default:
+  }
+}
+
 export default function Dashboard(props) {
   const {id} = useParams()
   const [value, setValue] = useState(0);
-  // const [listOfTrades, setListOfTrades] = useState([])
+  const [listOfTrades, setListOfTrades] = useState([])
   const [workflowStatus, setWorkflowStatus] = useState({
     tradeMatchingService: null,
     tradeClearingService: null,
     tradeSettlementService: null
   })
-  const listOfTrades = ["UU2TFZSG4HB0D80", "UD2TFZSG4HB0D81", "UD2TFZSG4HB0D82" ]
+//   const listOfTrades = ["UU2TFZSG4HB0D80", "UD2TFZSG4HB0D81", "UD2TFZSG4HB0D82" ]
 
-  const tradeValue ={
-    tradeWorkflow: [
-        {
-            tradeId: "UU2TFZSG4HB0D80", buyer: 'CLIENT01', seller: 'DEALER01'
-        },
-         {
-            tradeId: "UD2TFZSG4HB0D81", buyer: 'CLIENT01', seller: 'CCP01'
-        },
-        {
-            tradeId: "UD2TFZSG4HB0D82", buyer: 'DEALER01', seller: 'CCP01'
-        }
-    ]
+//   const tradeValue ={
+//     tradeWorkflow: [
+//         {
+//             tradeId: "UU2TFZSG4HB0D80", buyer: 'CLIENT01', seller: 'DEALER01'
+//         },
+//          {
+//             tradeId: "UD2TFZSG4HB0D81", buyer: 'CLIENT01', seller: 'CCP01'
+//         },
+//         {
+//             tradeId: "UD2TFZSG4HB0D82", buyer: 'DEALER01', seller: 'CCP01'
+//         }
+//     ]
+// }
+
+const getData = async (listOfTrades, getFmi) => {
+  console.log({ listOfTrades})
+  const headers = {
+      "Content-Type": "application/json",
+      'x-api-key': process.env.REACT_APP_X_API_KEY,
+      'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
+      'x-api-request-id': uuidv4(),
+      'x-financial-member-id': id.toUpperCase()
+    }
+    const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${listOfTrades[value].tradeId}&fmi=${getFmi(listOfTrades[value].tradeId)}`)
+    setWorkflowStatus(tradeData)
 }
 
+//Get the list of trades from the DB
   useEffect(() => {
-    // const tradeIds = {'tradeId': JSON.parse(localStorage.getItem('tradeId'))}
-    // const updateTradeIds = {...tradeIds, ...}
-    // console.log({ tradeIds})
-    // setListOfTrades(Object.values(tradeIds))
-  }, [])
-
-  const getData = async (listOfTrades, fmi, newVal) => {
-    console.log({ listOfTrades})
-    const headers = {
-        "Content-Type": "application/json",
-        'x-api-key': process.env.REACT_APP_X_API_KEY,
-        'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
-        'x-api-request-id': uuidv4(),
-        'x-financial-member-id': id.toUpperCase()
+    const getTradesList = async () => {
+      const tradesList = await fetchNoHeaders(`/repoTrades/tradesList/?loggedInUser=${id.toUpperCase()}`)
+      setListOfTrades(tradesList)
+      if (tradesList.length > 0) {
+        const response = await getData(tradesList, getFmi)
+        console.log({ response})
       }
-      const tradeData = await fetchData( headers, `/repoTrades/tradeWorkflowStatus/?tradeId=${!newVal ? listOfTrades[value] : newVal}&fmi=${fmi}`)
-      setWorkflowStatus(tradeData)
-  }
-
-  useEffect(() => {
-    value === 0 && getData(listOfTrades, 'TRADE_MATCHING_SERVICE')
+      return tradesList
+      // console.log({tradesList})
+    }
+    getTradesList()
   }, [])
 
-  const result = tradeValue.tradeWorkflow.filter((tradeList) =>{ return (tradeList.buyer === id.toUpperCase() || tradeList.seller === id.toUpperCase())})
-  const getFmi = (trade) => {
-    if (trade.seller === 'CCP01' || trade.buyer === 'CCP01') {
-      return 'TRADE_CLEARING_SERVICE'
-    } else {
-      return 'TRADE_MATCHING_SERVICE'
-    }
-    console.log({ trade })
-  }
 
-  console.log(getFmi(result))
+  useEffect(() => {
+    // value === 0 && getData(listOfTrades, 'TRADE_MATCHING_SERVICE')
+  }, [])
+
+  // const result = tradeValue.tradeWorkflow.filter((tradeList) =>{ return (tradeList.buyer === id.toUpperCase() || tradeList.seller === id.toUpperCase())})
+
+  // getFmi(listOfTrades[0].tradeId)
+
+  // console.log(getFmi(result))
   const handleChange = (event, newValue) => {
     console.log(listOfTrades[newValue], {value})
     setValue(newValue);
 
-    getData(result, getFmi(result[newValue]), result[newValue].tradeId)
+    // getData(result, getFmi(result[newValue]), result[newValue].tradeId)
   };
 
-console.log({ result })
+// console.log({ result })
   return (
     <div
         style={{minHeight: '90vh'}}
     >
-        <Box
+        { listOfTrades?.length > 0 ?  <Box
         sx={{display: 'flex', height: "auto", border: '1px solid #0474ac', borderRadius: '10px' }}
         >
-            <div style={{borderRight: '1px solid #0474ac'}}>
+           <div style={{borderRight: '1px solid #0474ac'}}>
                 <h4 style={{ margin: '1rem 0'}}>List of Trades</h4>
                 <Tabs
                     orientation="vertical"
@@ -254,14 +270,15 @@ console.log({ result })
                     textColor="primary"
                     style={{backgroundColor: '#0474ac28'}}
                 >
-                {result?.map((trade, i)=> <Tab label={trade.tradeId} {...a11yProps(i)}/> )}
+                {listOfTrades?.map((trade, i)=> <Tab label={trade.tradeId} {...a11yProps(i)}/> )}
                 </Tabs>
             </div>
             
-              {result.map((trade, i)=> <TabPanel value={value} index={i}>
+               {listOfTrades.map((trade, i)=> <TabPanel value={value} index={i}>
             <TradeDetails workflowStatus={workflowStatus} tradeId={trade.tradeId} id={id} i={i}/>
             </TabPanel>)}
-        </Box>
+            
+        </Box> : <h4>You haven't create a trade yet.</h4>}
     </div>
   );
 }
