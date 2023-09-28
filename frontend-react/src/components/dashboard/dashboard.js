@@ -68,6 +68,8 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
   
   
   const clearTrade = async (date) => {
+    const newDate = date.split('/').reverse().join('-')
+
     console.log({ date })
     const headers = {
       "Content-Type": "application/json",
@@ -75,13 +77,14 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
       'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
       'x-api-request-id': uuidv4(),
       'x-financial-member-id': id.toUpperCase(),
-      'x-simulation-date': date
+      'x-simulation-date': newDate
     }
      const response = await postData( headers, `/repoTrades/clearing?tradeId=${tradeId}`)
   }
 
   const settleTrade = async (date) => {
-    console.log({ date })
+    const newDate = date.split('/').reverse().join('-')
+    console.log({ date }, {newDate})
 
     const headers = {
       "Content-Type": "application/json",
@@ -89,7 +92,7 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
       'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
       'x-api-request-id': uuidv4(),
       'x-financial-member-id': id.toUpperCase(),
-      'x-simulation-date': date
+      'x-simulation-date': newDate
     }
      const response = await postData( headers, `/repoTrades/settlement?tradeId=${tradeId}`)
   }
