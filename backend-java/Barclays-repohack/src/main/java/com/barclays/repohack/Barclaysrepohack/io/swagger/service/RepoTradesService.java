@@ -176,14 +176,7 @@ public class RepoTradesService {
         return getWorkflowEvents(httpEntity, Objects.requireNonNull(response.getBody()).getTradeId(), "TRADE_CLEARING_SERVICE");
     }
     public ResponseEntity<String> getBusinessEvents (HttpEntity<String> requestEntity) throws IOException {
-
-        /*ObjectMapper objectMapper = new ObjectMapper();
-        Resource classPathResource = resourceLoader.getResource("classpath:tradeBusinessEventQueryResponse.json");
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        TradeBusinessEventsQueryResponse tradeBusinessEventsJson = objectMapper.readValue(new File(classPathResource.getURI()), TradeBusinessEventsQueryResponse.class);
-        ResponseEntity<TradeBusinessEventsQueryResponse> response = tradeBusinessEvents(tradeBusinessEventsJson);
-        */
-        return restTemplate.exchange(
+         return restTemplate.exchange(
                 "https://repohack2023.nayaone.com/repoTrades/tradeBusinessEventsQuery", HttpMethod.POST, requestEntity, String.class);
 
     }
@@ -192,36 +185,10 @@ public class RepoTradesService {
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://repohack2023.nayaone.com/repoTrades/tradeWorkflowStatus");
         URI uri = uriComponentsBuilder.queryParam("tradeId", tradeId).queryParam("fmi", fmi).build().toUri();
-        ResponseEntity<String> response = restTemplate.exchange(
+
+        return restTemplate.exchange(
                 uri, HttpMethod.GET, requestEntity, String.class);
-        //Trade trade = tradeRepository.findByTradeIdEquals(tradeId);
-        //List<TradeEvent> tradeEvent = tradeEventRepository.findByTradeId(trade.getId());
-        /*for(TradeEvent te: tradeEvent){
-            List<WorkflowEventData> wfedList = new ArrayList<>();
-            if(te.getEvent().equals("TRADE_ACCEPTED")){
-                WorkflowEventData wfed = new WorkflowEventData();
-                wfed.setWorkflowEvents(getWorkflowEventDataList(te));
-                wfedList.add(wfed);
-                response.setTradeMatchingService(wfedList);
-            }
-            if(te.getEvent().equals("TRADE_CLEARED")){
-                WorkflowEventData wfed = new WorkflowEventData();
-                wfed.setWorkflowEvents(getWorkflowEventDataList(te));
-                wfedList.add(wfed);
-                response.setTradeMatchingService(wfedList);
-            }
-            if(te.getEvent().equals("TRADE_SETTLED")){
-                WorkflowEventData wfed = new WorkflowEventData();
-                wfed.setWorkflowEvents(getWorkflowEventDataList(te));
-                wfedList.add(wfed);
-                response.setTradeMatchingService(wfedList);
-            }
 
-        }*/
-
-        return response;
-        /*return restTemplate.exchange(
-                uri, HttpMethod.GET, requestEntity, TradeWorkflowStatusResponse.class);*/
     }
 
     public void saveOrUpdateTradeCycle(RepoTradeSubmissionResponse repoTradeResponse){
