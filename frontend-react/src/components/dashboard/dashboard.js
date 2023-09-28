@@ -188,6 +188,8 @@ const getData = async (listOfTrades, getFmi) => {
 
   useEffect(() => {
   }, [])
+
+  
   const handleChange = (event, newValue) => {
     setValue(newValue);
     const response = getData(listOfTrades[newValue], getFmi)
