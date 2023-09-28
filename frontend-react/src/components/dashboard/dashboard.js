@@ -5,12 +5,10 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Formik, Form, Field } from 'formik';
 import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment'
 import { fetchData, getStatus, getTradeStatus, fetchNoHeaders, postData } from '../../utils/utils';
-import axios from 'axios';
 
 const workflowEventLabelStyled = {
     fontStyle: 'Italic',
@@ -57,56 +55,6 @@ function a11yProps(index) {
   };
 }
 
-// const TradeIdForm = ({handleSelect, fmi}) => {
-//     // const handleChange = (e) => {
-//     //     console.log(e.target)
-//     //     // handleSelect()
-//     // }
-//     return (
-//         <Formik
-//         enableReinitialize="true"
-//        initialValues={{fmi: 'TRADE MATCHING SERVICE'}}
-//        validate={values => {
-//        }}
-//     //    onSubmit={(values, setSubmitting) => handleSubmit(values, setSubmitting)}
-//      >
-//        {(props) => {
-//         return (
-//             <Form
-//                 style={{    display: 'flex',
-//                 margin: 'auto',
-//                 width: '40%',
-//                 justifyContent: 'space-around', alignItems: 'end', marginBottom: '2rem'}}
-//             >
-//           <div
-//             style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}
-//           >
-//             <label htmlFor="fmi" style={{paddingBottom: '.4rem'}}>Select a Financial Market Infrastructure</label>
-//             <Field
-//               as='select'
-//               id="fmi" 
-//               name="fmi"
-//               value={fmi}
-//             //   onChange={handleChange}
-//               style={{textAlign: 'center', padding: '.3rem 0', borderRadius: '5px'}}
-//               onChange={(e) => handleSelect(e.target.value)}
-//               >
-//                 {fmisArr.map(fmi =><option value={Object.keys(fmi)[0]}>{Object.values(fmi)[0]}</option>)}
-//               </Field>
-//           </div>
-//      {/* <Button style={{background: 'red', height: '2rem'}}
-//         type='submit'
-//         // disabled={props.isSubmitting}
-//          variant="contained">Submit</Button> */}
-
-//      </Form>
-//         )
-//        }}
-//         </Formik>
-       
-//     )
-// }
-
 const TradeDetails = ({workflowStatus, tradeId, id}) => {
   const tradeDetails = () => {
     if (workflowStatus?.tradeMatchingService) {
@@ -125,10 +73,20 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
       'x-financial-member-id': id.toUpperCase(),
       'x-simulation-date': date
     }
-     const response = await postData( headers, `/repoTrades/clearing/${tradeId}`)
-     console.log({ response })
+     const response = await postData( headers, `/repoTrades/clearing?tradeId=${tradeId}`)
   }
 
+  const settleTrade = async (date) => {
+    const headers = {
+      "Content-Type": "application/json",
+      'x-api-key': process.env.REACT_APP_X_API_KEY,
+      'x-participant-id': process.env.REACT_APP_X_PARTICIPANT_ID,
+      'x-api-request-id': uuidv4(),
+      'x-financial-member-id': id.toUpperCase(),
+      'x-simulation-date': date
+    }
+     const response = await postData( headers, `/repoTrades/settlement?tradeId=${tradeId}`)
+  }
   const navigate = useNavigate()
   const date = tradeDetails()?.length> 0 && new Date(tradeDetails()[0]?.eventTimeStamp)
     return (
@@ -162,7 +120,7 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
         <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade()}>Clear</Button>
-        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => navigate(`/settleTrades/${tradeId}`)} >Settle</Button>
+        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => settleTrade()} >Settle</Button>
     </Box>
 </Box>
     )
@@ -190,24 +148,8 @@ export default function Dashboard(props) {
     tradeClearingService: null,
     tradeSettlementService: null
   })
-//   const listOfTrades = ["UU2TFZSG4HB0D80", "UD2TFZSG4HB0D81", "UD2TFZSG4HB0D82" ]
-
-//   const tradeValue ={
-//     tradeWorkflow: [
-//         {
-//             tradeId: "UU2TFZSG4HB0D80", buyer: 'CLIENT01', seller: 'DEALER01'
-//         },
-//          {
-//             tradeId: "UD2TFZSG4HB0D81", buyer: 'CLIENT01', seller: 'CCP01'
-//         },
-//         {
-//             tradeId: "UD2TFZSG4HB0D82", buyer: 'DEALER01', seller: 'CCP01'
-//         }
-//     ]
-// }
 
 const getData = async (listOfTrades, getFmi) => {
-  console.log({ listOfTrades})
   const headers = {
       "Content-Type": "application/json",
       'x-api-key': process.env.REACT_APP_X_API_KEY,
@@ -229,30 +171,19 @@ const getData = async (listOfTrades, getFmi) => {
         console.log({ response})
       }
       return tradesList
-      // console.log({tradesList})
     }
     getTradesList()
   }, [])
 
 
   useEffect(() => {
-    // value === 0 && getData(listOfTrades, 'TRADE_MATCHING_SERVICE')
   }, [])
-
-  // const result = tradeValue.tradeWorkflow.filter((tradeList) =>{ return (tradeList.buyer === id.toUpperCase() || tradeList.seller === id.toUpperCase())})
-
-  // getFmi(listOfTrades[0].tradeId)
-
-  // console.log(getFmi(result))
   const handleChange = (event, newValue) => {
-    console.log(listOfTrades[newValue], {newValue})
     setValue(newValue);
     const response = getData(listOfTrades[newValue], getFmi)
-    console.log({response, workflowStatus })
 
   };
 
-// console.log({ result })
   return (
     <div
         style={{minHeight: '90vh'}}
