@@ -113,9 +113,15 @@ public class RepoTradesApiController implements RepoTradesApi {
     }
 
     public ResponseEntity<List<Trade>> getAllTrades(@RequestParam String loggedInUser){
-        return ResponseEntity.ok()
-                .body(repoTradesService.getTradesList(loggedInUser));
+        List<Trade> trades = repoTradesService.getTradesList(loggedInUser);
+        if(trades!=null && !trades.isEmpty()){
+            return ResponseEntity.ok()
+                    .body(trades);
 
+        }
+        else
+            return ResponseEntity.ok()
+                    .body(List.of());
 
     }
 
