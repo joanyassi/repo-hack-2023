@@ -94,7 +94,7 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
      const response = await postData( headers, `/repoTrades/settlement?tradeId=${tradeId}`)
   }
   const navigate = useNavigate()
-  const date = tradeDetails()?.length> 0 && new Date(tradeDetails()[0]?.eventTimeStamp).toLocaleDateString()
+  const date = tradeDetails()?.length> 0 && new Date(tradeDetails()[0]?.eventTimeStamp)
   console.log({ date })
     return (
         <Box>
@@ -126,8 +126,8 @@ const TradeDetails = ({workflowStatus, tradeId, id}) => {
         style={{width: '40%', margin: 'auto'}}
     >
         <h4 style={{marginBottom: '2rem'}}>Trades Actions</h4>
-        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade(date)}>Clear</Button>
-        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => settleTrade(date)} >Settle</Button>
+        <Button style={{background: 'red', color: 'white', padding: '.5rem', marginRight: '1rem', width: '40%'}} onClick={() => clearTrade(date.toLocaleDateString())}>Clear</Button>
+        <Button style={{background: 'green', color: 'white', padding: '.5rem', marginLeft: '1rem', width: '40%'}} onClick={() => settleTrade(date.toLocaleDateString())} >Settle</Button>
     </Box>
 </Box>
     )
